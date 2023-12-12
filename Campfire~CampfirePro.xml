@@ -1,0 +1,45 @@
+<Extensions><Version>1.11</Version><Panel>
+    <PanelId>Campfire~CampfirePro</PanelId>
+    <Origin>local</Origin>
+    <Order>1</Order>
+    <Location>HomeScreenAndCallControls</Location>
+    <Icon>Custom</Icon>
+    <Name>Campfire Controls</Name>
+    <ActivityType>Custom</ActivityType>
+    <CustomIcon>
+      <Id>7a656f12b26716cb60721aa6e4ca69cf2465eedc52ab8f678f88ec8847a313fe</Id>
+    </CustomIcon>
+    <Page>
+      <Name>Camera Features</Name>
+      <Row>
+        <Name>Info</Name>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~Info</WidgetId>
+          <Name>Press any button to activate. Hold any button for 3 seconds to learn more.</Name>
+          <Type>Text</Type>
+          <Options>size=4;fontSize=normal;align=left</Options>
+        </Widget>
+      </Row>
+      <Row>
+        <Name>Mode</Name>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~Mode</WidgetId>
+          <Type>GroupButton</Type>
+          <Options>size=4;columns=2</Options>
+          <ValueSpace>
+            <Value>
+              <Key>Focus</Key>
+              <Name>Focus</Name>
+            </Value>
+            <Value>
+              <Key>Conversation</Key>
+              <Name>Conversation</Name>
+            </Value>
+          </ValueSpace>
+        </Widget>
+      </Row>
+      <PageId>Campfire~CampfirePro~CameraFeatures</PageId>
+      <Options>hideRowNames=0</Options>
+    </Page>
+  </Panel>
+  </Extensions>
