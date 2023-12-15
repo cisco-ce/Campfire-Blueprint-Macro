@@ -175,7 +175,7 @@ async function init() {
     updateCameraMode(Settings.RoomTypeSettings.Campfire.Camera.Mode.Default, 'Camera Recovery Failed')
   }
 
-  console.log({ Campfire_1_Info: `Current Camera Mode: [${activeCameraMode}]` })
+  console.log({ Campfire_1_Info: `Camera Mode Identified: [${activeCameraMode}]` })
 
   //Build UserInterface // ToDo - Remove UI Automation except Suport Agreement?
   switch (Settings.RoomType.toLowerCase()) {
@@ -183,7 +183,7 @@ async function init() {
       BuildInterface.Campfire()
       break;
   }
-  RemoveUnusedInterFaces('Campfire~CampfirePro')
+  RemoveUnusedInterFaces('Campfire~CampfirePro');
 
   //Re-apply camera mode on startup
   await updateCameraMode(activeCameraMode)
@@ -446,7 +446,7 @@ const Handle = {
                   if (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase() == 'auto') {
                     Handle.Interval.OnSilence = setInterval(async function () {
                       let peopleComposition = peopleDataComposition.get() == '' ? peopleDataComposition.DefaultComposition : peopleDataComposition.get();
-                      await composeCamera(true, peopleComposition)
+                      await composeCamera(true, peopleComposition.DefaultComposition)
                     }, 2000)
                   }
                 }, Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.TransitionTimeout.OnSilence)
@@ -477,11 +477,14 @@ const Handle = {
                     if (checkState != 'High') {
                       Handle.Timeout.CameraMode.Conversation[zonePayload.Zone.Id].active = false;
                       conversationComposition.removeCamera(zonePayload.Assets.CameraConnectorId)
-
+                      let checkCompArr = conversationComposition.get()
+                      if (checkCompArr.length < 1) {
+                        composeCamera(true, [])
+                      }
                       if (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase() == 'auto') {
                         Handle.Interval.OnSilence = setInterval(async function () {
                           let peopleComposition = peopleDataComposition.get() == '' ? peopleDataComposition.DefaultComposition : peopleDataComposition.get();
-                          await composeCamera(true, peopleComposition)
+                          await composeCamera(true, peopleComposition.DefaultComposition)
                         }, 2000)
                       }
                     } else {
@@ -491,10 +494,9 @@ const Handle = {
                 }
 
                 runHandler(Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.OnJoin)
-
-                //Compose the High Camera
-                await composeCamera(false, zonePayload.Assets.CameraConnectorId)
               }
+              //Compose the High Camera
+              await composeCamera(false, conversationComposition.get())
               break
             default:
               break
