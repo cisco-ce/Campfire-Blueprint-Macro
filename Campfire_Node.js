@@ -31,13 +31,16 @@ or implied.
 */
 
 import xapi from 'xapi';
-import { GMM } from './GMM_Lite_Lib';
+import { GMM } from './GMM_Lib';
 
-let SendToPrimiry = ''
 
-let PrimaryInfo = ''
+let PrimaryInfo = '';
+let PrimaryConnection = '';
+let SendToPrimiry = '';
 
-let Run_Automation = false;
+let NodeReady = false;
+
+let peopleCountCurrent = 0;
 
 const init = {
   Phase1: async function () {
@@ -52,16 +55,27 @@ const init = {
     try {
       PrimaryInfo = await GMM.read('PrimaryInfo')
       let info = atob(PrimaryInfo)
+      info = JSON.parse(info)
 
-
+      PrimaryConnection = new GMM.Connect.IP(info.Authentication.Username, info.Authentication.Passcode, info.IpAddress.toString());
+      console.log(PrimaryConnection)
+      SendToPrimiry = async function (method, data) {
+        console.debug(method, data)
+        const request = await PrimaryConnection.status({ Method: method, Data: data }).post()
+        return request
+      }
+      NodeReady = true;
+      let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
+      if (peopleCount > 0) { peopleCountCurrent = 1 }
+      await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
     } catch (e) {
-      PrimaryInfo = 'Unset'
-      await GMM.write('PrimaryInfo', 'Unset')
+      PrimaryInfo = 'Unset';
+      await GMM.write('PrimaryInfo', 'Unset');
     }
   },
   Phase2: async function () {
 
-    console.info({ Campfire_Node_Info: 'Initializing Campfire Node...' })
+    console.info({ Campfire_Node_Info: 'Initializing Campfire Node...' });
   }
 }
 
@@ -70,6 +84,9 @@ async function Run_Setup() { await init.Phase1() }
 async function updatPrimaryInfo(info) {
   await GMM.write('PrimaryInfo', info)
   console.info({ Campfire_Node_Info: `Primary Node Connectivity Information Updated` })
+  let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
+  if (peopleCount > 0) { peopleCountCurrent = 1 }
+  await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
 }
 
 async function configureNode() {
@@ -81,8 +98,8 @@ async function configureNode() {
   await xapi.Config.UserInterface.OSD.Mode.set('Unobstructed').catch(e => { processError(e, 'Failed Setting OSD Mode Config') });
   await xapi.Config.Peripherals.Profile.TouchPanels.set(0).catch(e => { processError(e, 'Failed Setting Profile TouchPanels Config') });
   await xapi.Config.Audio.Output.InternalSpeaker.Mode.set('Off').catch(e => { processError(e, 'Failed Setting InternalSpeaker Config') });
-  await xapi.Config.Standby.Halfwake.Mode.set('Manual').catch(e => { processError(e, 'Failed Setting Halfwake Mode Config') });;
-
+  await xapi.Config.Standby.Halfwake.Mode.set('Manual').catch(e => { processError(e, 'Failed Setting Halfwake Mode Config') });
+  await xapi.Config.RoomAnalytics.PeopleCountOutOfCall.set('On');
   console.info({ Campfire_Node_Info: `Cofiguring Campfire Node Configuration Complete!` })
 }
 
@@ -90,17 +107,22 @@ function processError(err, context) {
 
   err['Context'] = context
 
-  console.warn({Campfire_Node_Warn: err})
+  console.warn({ Campfire_Node_Warn: err })
 }
 
 async function runCameraMode(mode) {
   switch (mode) {
-    case 'Focus':
+    case 'Speaker':
       await xapi.Command.Cameras.SpeakerTrack.Activate()
       await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
       console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
       break;
-    case 'Conversation':
+    case 'Everyone': case 'Conversation_FR':
+      await xapi.Command.Cameras.SpeakerTrack.Activate()
+      await xapi.Command.Cameras.SpeakerTrack.Frames.Activate()
+      console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
+      break;
+    case 'Conversation_SPK':
       await xapi.Command.Cameras.SpeakerTrack.Activate()
       await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
       console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
@@ -119,15 +141,51 @@ GMM.Event.Receiver.on(event => {
       case 'Initialization':
         updatPrimaryInfo(event.Value.Data);
         break;
-      case 'StatusUpdate':
-        runCameraMode(event.Value.Data.CameraMode);
+      case 'RollAssignment':
+        updateNodeLabel(event.Value.Data, event.Source.Id)
+        break
+      case 'StandbyState':
+        if (event.Value.Data.toLowerCase() == 'off') {
+          xapi.Command.Standby.Deactivate()
+        } else {
+          xapi.Command.Standby.Activate()
+        }
+        break;
+      case 'FramesState':
+        if (event.Value.Data.toLowerCase() == 'active') {
+          xapi.Command.Cameras.SpeakerTrack.Frames.Activate();
+        } else {
+          xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate();
+        }
         break;
       case 'CameraMode':
         runCameraMode(event.Value.Data);
         break;
     }
-
   }
 })
+
+xapi.Status.RoomAnalytics.PeopleCount.Current.on(async event => {
+  if (event > 0) {
+    peopleCountCurrent = 1;
+  } else {
+    peopleCountCurrent = 0
+  }
+  await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
+})
+
+async function updateNodeLabel(data, primarySerial) {
+  const serial = await xapi.Status.SystemUnit.Hardware.Module.SerialNumber.get()
+
+  const findDeviceBySerial = data.find(item => item.CodecSerialNumber === serial);
+  const index = data.findIndex(item => item.CodecSerialNumber === serial);
+  let label = findDeviceBySerial ? findDeviceBySerial.Label : "";
+  await xapi.Command.SystemUnit.SignInBanner.Clear()
+  await xapi.Command.SystemUnit.SignInBanner.Set({}, `Campfire Blueprint Installed
+  Label: [${label}] || SystemRole: [Node] || Index: [${index}]
+  Primary Codec Idetnitfier: [${primarySerial}]
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Configuration for Campfire must be done through the Primary Codec`);
+}
 
 Run_Setup()
