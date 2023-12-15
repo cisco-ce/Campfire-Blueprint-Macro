@@ -27,7 +27,7 @@ or implied.
  * 
  * Released: November 20, 2023
  * Updated: December 8, 2023
- * Version: 0.7.1
+ * Version: 0.7.2
  * 
  * Description:
  *   - Audio Zone Manager (AZM)
@@ -168,7 +168,7 @@ console.AZM.E_BucketDebug = function (...args) { if (config_settings_DebugUtil_E
 console.AZM.A_BucketDebug = function (...args) { if (config_settings_DebugUtil_AnalogBucketDbug) { let arr = []; args.forEach(element => { arr.push(element); }); console.debug({ AZM_AnalogBucketDebug: arr }); }; }
 console.AZM.AdvDebug = function (...args) { if (config_settings_DebugUtil_AdvancedDbug) { let arr = []; args.forEach(element => { arr.push(element); }); console.debug({ AZM_AdvDebug: arr }); }; }
 
-const version = '0.7.0'
+const version = '0.7.2'
 
 /* 
   Object used to capture/clone Audio Configuration for AZM
@@ -544,6 +544,13 @@ function Process_BIN_Data(dataset) {
   return { Average: avg, Peak: peak, Sample: dataset.clone() } // ToDo. State, and Zone info needs to be applied here
 }
 
+async function discoverEthernetStreamNamebySerial(serial) {
+  const peripherals = await xapi.Status.Peripherals.ConnectedDevice.get()
+
+  const streamName = peripherals.find(item => item.Name.includes('Microphone') && item.SerialNumber === serial);
+
+  return streamName ? streamName.ID : null;
+}
 
 /* 
   This function assigns the connector id to the Audio Zone configuration for Ethernet Microphones
@@ -551,24 +558,36 @@ function Process_BIN_Data(dataset) {
   We instead use the StreamName in the Audio Configuration, in order to discover the ConnectorId
 */
 async function Append_Ethernet_ConnectorId_By_StreamName() {
-  const mics = await xapi.Status.Audio.Input.Connectors.Ethernet.get()
+  const mics = await xapi.Status.Audio.Input.Connectors.Ethernet.get();
 
-  AudioConfiguration.Zones.forEach((zone, index) => {
+  for (let index = 0; index < AudioConfiguration.Zones.length; index++) {
+    const zone = AudioConfiguration.Zones[index];
+
     if (zone.MicrophoneAssignment.Type.toLowerCase() == 'ethernet' || zone.MicrophoneAssignment.Type.toLowerCase() == 'aes67') {
-      zone.MicrophoneAssignment.Connectors.forEach((conx, i) => {
-        if (conx?.StreamName == '' || conx.StreamName == undefined) {
-          checkZoneSetup(`Zone Index [${index}] has an invalid Ethernet Microphone Configuration`)
+      for (let i = 0; i < zone.MicrophoneAssignment.Connectors.length; i++) {
+        const conx = zone.MicrophoneAssignment.Connectors[i];
+
+        if ((conx?.Serial == '' && conx?.Serial != undefined) || (conx?.StreamName == '' && conx?.StreamName == undefined)) {
+          checkZoneSetup(`Zone Index [${index}] has an invalid Ethernet Microphone Configuration`);
         }
-        mics.forEach(mic => {
+
+        for (const mic of mics) {
           if (mic.StreamName == conx.StreamName) {
-            console.AZM.SetupDebug(`StreamName match on Zone Index [${index}], assigning Ethernet ConnectorId [${parseInt(mic.id)}] to Audio Zone Configuration`)
-            AudioConfiguration.Zones[index].MicrophoneAssignment.Connectors[i].Id = parseInt(mic.id)
+            console.AZM.SetupDebug(`StreamName match on Zone Index [${index}], assigning Ethernet ConnectorId [${parseInt(mic.id)}] to Audio Zone Configuration`);
+            AudioConfiguration.Zones[index].MicrophoneAssignment.Connectors[i].Id = parseInt(mic.id);
+          } else {
+            const streamName = await discoverEthernetStreamNamebySerial(conx.Serial);
+            if (mic.StreamName == streamName) {
+              console.AZM.SetupDebug(`StreamName match on Zone Index [${index}], assigning Ethernet ConnectorId [${parseInt(mic.id)}] to Audio Zone Configuration`);
+              AudioConfiguration.Zones[index].MicrophoneAssignment.Connectors[i].Id = parseInt(mic.id);
+            }
           }
-        })
-      })
+        }
+      }
     }
-  })
+  }
 }
+
 /* 
   This function builds a report of Microphone Connector Information
 */
@@ -826,20 +845,20 @@ AZM.Event.TrackZones.on = function (callBack) {
             AudioBucket.Ethernet[ethernet_input_event.id].run(ethernet_input_event, callBack)
           }
         })
-        console.AZM.info(`Subscription enabled for xapi.Event.Audio.Input.Connectors.${element}`)
+        console.AZM.info(`Subscription enabled instantiated for xapi.Event.Audio.Input.Connectors.Ethernet`)
         break;
       case 'microphone': case 'analog':
         xapi.Event.Audio.Input.Connectors.Microphone.on(analog_input_event => {
           AudioBucket.Analog[analog_input_event.id].run(analog_input_event, callBack)
         })
-        console.AZM.info(`Subscription enabled for xapi.Event.Audio.Input.Connectors.${element}`)
+        console.AZM.info(`Subscription enabled instantiated for xapi.Event.Audio.Input.Connectors.Microphone`)
         break
       case 'usb':
         xapi.Event.Audio.Input.Connectors.USB.on(usb_input_event => {
           //Run Audio Logic Against Connector ID
           //Callback Processed information
         })
-        console.AZM.info(`Subscription enabled for xapi.Event.Audio.Input.Connectors.${element}`)
+        console.AZM.info(`Subscription enabled instantiated for xapi.Event.Audio.Input.Connectors.USBMicrophone`)
         break;
       default:
         throw Error(JSON.stringify({
