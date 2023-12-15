@@ -7,7 +7,7 @@ License at
 All use of the material herein must be in accordance with the terms of
 the License. All rights not expressly granted by the License are
 reserved. Unless required by applicable law or agreed to separately in
-writing, software distributed under the License is distributed on an "AS
+writing, stware distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 *********************************************************x
@@ -27,45 +27,16 @@ or implied.
  *   - 
  * 
  * Started: November 20, 2023
- * Updated: Dec 8, 2023
+ * Updated: Dec 15, 2023
 */
-
-/*
- * ToDo
- * 
- * - Initilization
- *  - Port some Initilization functions from main init to initilization script
- *  - check for valid video signals
- * 
- * - Camera Modes
- *  - Focus Mode
- *    - Test current version
- *  - Conversation Mode
- *    - Build and Test
- *  - Spotlight Mode
- *    - Build and Test
- *  - Quad
- *    - Build and Test
- *  
- *  Node Macro
- *    - Build and Test
- *      - Frames Sync
- *      - PeopleCount Status
- *      - Auto-Configure
- *    - Have initilization Deploy Macro
- *      - Perform Macro Get using raw putxml xAPI
- *      - If missing, deploy
- *    - Generate random login for Main and deploy to nodes
- *    - On node boot, request credentials
- */
 
 /********************************
             Imports
 ********************************/
 import xapi from 'xapi';
-import { Settings, CodecInfo, AudioMap } from './Campfire_2_Config_V_0-0-1';
-import { BuildInterface, RemoveUnusedInterFaces } from './Campfire_3_UserInterface_V_0-0-1';
-import { Run_Setup, SendToNodes } from './Campfire_4_Initialization_V_0-0-1';
+import { Settings, CodecInfo, AudioMap } from './Campfire_2_Config';
+import { BuildInterface, RemoveUnusedInterFaces } from './Campfire_3_UserInterface';
+import { Run_Setup, SendToNodes } from './Campfire_4_Initialization';
 import { GMM } from './GMM_Lite_Lib'
 import { AZM } from './AZM_Lib';
 
@@ -73,12 +44,7 @@ import { AZM } from './AZM_Lib';
           Prototypes
 ********************************/
 
-
-/* 
-  Alternative Includes prototype that replaces
-  the Strict Equality operator (===) with the
-  Equality Operator (==)
-*/
+// Alternative Includes prototype that replaces the Strict Equality operator (===) with theEquality Operator (==)
 Array.prototype.includish = function (value) {
   for (let i = 0; i < this.length; i++) {
     if (this[i] == value) {
@@ -88,10 +54,8 @@ Array.prototype.includish = function (value) {
   return false;
 };
 
-/* 
-  Enables a Clean Cloning of an Object without
-  altering the original object
-*/
+
+// Enables a Clean Cloning of an Object withoutaltering the original object
 Object.prototype.clone = Array.prototype.clone = function () {
   if (Object.prototype.toString.call(this) === '[object Array]') {
     var clone = [];
@@ -112,15 +76,80 @@ Object.prototype.clone = Array.prototype.clone = function () {
 }
 
 /********************************
-          Subscriptions
+        Class Definitions
 ********************************/
 
+//Instatiates an array, that handles the adding and removing of objects in it's index
+//Used to alter the array passed into SetMainSurce for PeopleCount and Conversation based compositions
+class CameraCompositionTracker {
+  constructor(defaultComposition, label) {
+    this.DefaultComposition = defaultComposition.map(element => parseInt(element));
+    this.CurrentComposition = defaultComposition.map(element => parseInt(element));
+    this.Label = label
+  }
+  addCamera(cameraId) {
+    this.CurrentComposition.push(parseInt(cameraId))
+    this.CurrentComposition = [...new Set(this.CurrentComposition)];
+    this.CurrentComposition = this.CurrentComposition.sort(function (a, b) { return a - b; });
+    console.log({ Campfire_1_Log: `Composition [${this.Label}] Updated`, Action: `Adding Camera [${cameraId}]`, Composition: pretty_Composition_Log(this.CurrentComposition) })
+    return this.CurrentComposition;
+  }
+  removeCamera(cameraId) {
+    const index = this.CurrentComposition.indexOf(parseInt(cameraId));
+    if (index !== -1) {
+      this.CurrentComposition.splice(index, 1);
+      if (this.CurrentComposition.length < 1) {
+        console.warn({ Campfire_1_Warn: `Composition [${this.Label}] Empty!` })
+      }
+      this.CurrentComposition = [...new Set(this.CurrentComposition)];
+      this.CurrentComposition = this.CurrentComposition.sort(function (a, b) { return a - b; });
+      console.log({ Campfire_1_Log: `Composition [${this.Label}] Updated`, Action: `Removing Camera [${cameraId}]`, Composition: pretty_Composition_Log(this.CurrentComposition) })
+      return this.CurrentComposition;
+    } else {
+      console.log({ Campfire_1_Log: `Composition [${this.Label}] Updated`, Action: 'No Action', Composition: pretty_Composition_Log(this.CurrentComposition) })
+      return this.CurrentComposition;
+    }
+  }
+  reset() {
+    console.debug({ Campfire_1_Debug: `Composition [${this.Label}] Reset` })
+    this.CurrentComposition = this.DefaultComposition.clone();
+    return this
+  }
+  get() {
+    return this.CurrentComposition;
+  }
+}
 
 /********************************
-          Run Macro
+          Const/Var/Let
 ********************************/
 
+//Test that shows when a specific camera mode is slected
+const cameraModeDescriptions = {
+  Speaker: 'Maintain focus on the active speaker in your room, so your audience doesn\'t lose sight of them',
+  Everyone: 'Promote Equity in your space, leveraging all 4 cameras and Frames Camera Intelligence',
+  Conversation_SPK: 'Keep all conversations alive, by mixing all cameras with active speakers in front of them',
+  Conversation_FR: 'Keep all conversations alive, by mixing all cameras with active speakers in front of them'
+}
+
+// Used to track and implement the Active Campfire Camera mode
 let activeCameraMode = ''
+
+// Used to track the last know Camera Composition, primarly used to prevent excessive SetMainSource Changes
+let lastknownComposition = []
+
+// Data about the Node Codecs, used for logging and updating node Information
+let nodeInfo = []
+
+// Initialize the array used to track the PeopleCount compostion
+const peopleDataComposition = new CameraCompositionTracker([1, 2, 3, 4], 'PeopleCount');
+
+// Initialize the array used to track the Conversation compostion
+const conversationComposition = new CameraCompositionTracker([], 'Conversation');
+
+/********************************
+      Initialization Function
+********************************/
 
 async function init() {
   await AZM.Command.Zone.Setup(AudioMap);
@@ -128,13 +157,13 @@ async function init() {
 
   //Check Node Connection
   const nodePing = await SendToNodes('Initialization', btoa(JSON.stringify({
-    IpAddress: '',
+    IpAddress: await xapi.Status.Network[1].IPv4.Address.get(),
     Authentication: CodecInfo.PrimaryCodec.Authentication,
   })))
 
   if (nodePing.Errors.length > 0) {
     nodePing.Errors.forEach(element => {
-      console.error({ Campfire_2_Error: `Failed Node Connection on Initialization`, Response: { Destination: element.GMM_Context.Destination, StatusCode: element.data.StatusCode } })
+      console.error({ Campfire_1_Error: `Failed Node Connection on Initialization`, Response: { Destination: element.GMM_Context.Destination, StatusCode: element.data.StatusCode } })
     })
   }
 
@@ -142,10 +171,11 @@ async function init() {
   try {
     activeCameraMode = await GMM.read('activeCameraMode')
   } catch (e) {
-    updateCameraMode(Settings.RoomTypeSettings.Campfire.Camera.Mode.Default.clone())
+    console.error(e)
+    updateCameraMode(Settings.RoomTypeSettings.Campfire.Camera.Mode.Default, 'Camera Recovery Failed')
   }
 
-  console.log({ Campfire_2_Info: `Current Camera Mode: [${activeCameraMode}]` })
+  console.log({ Campfire_1_Info: `Current Camera Mode: [${activeCameraMode}]` })
 
   //Build UserInterface // ToDo - Remove UI Automation except Suport Agreement?
   switch (Settings.RoomType.toLowerCase()) {
@@ -155,12 +185,30 @@ async function init() {
   }
   RemoveUnusedInterFaces('Campfire~CampfirePro')
 
-  //Update UI Feedback
-  await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Mode', Value: activeCameraMode })
+  //Re-apply camera mode on startup
+  await updateCameraMode(activeCameraMode)
+
+  nodeInfo = CodecInfo.NodeCodecs.clone()
+  nodeInfo.forEach((e, i) => { delete nodeInfo[i].IpAddress; delete nodeInfo[i].Authentication })
+
+  await SendToNodes('RollAssignment', nodeInfo)
+
+  let connectedNodes = ``;
+
+  nodeInfo.forEach((el, i) => {
+    connectedNodes = connectedNodes + `- Label: [${el.Label}] || Index: [${i}]\n\t`
+  })
+
+  await xapi.Command.SystemUnit.SignInBanner.Clear()
+  await xapi.Command.SystemUnit.SignInBanner.Set({}, `Campfire Blueprint Installed
+  SystemRole: [Primary]
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Connected Nodes:\n\t${connectedNodes}
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  To configure Campfire, Edit the [Campfire_2_Config] Macro`);
 
   //Update nodes Camera Mode
-  console.error({ CameraMode: activeCameraMode })
-  SendToNodes('CameraMode', activeCameraMode)
+  await SendToNodes('CameraMode', activeCameraMode)
 
   //Check if the Codec is already in a state where VuMeter Monitoring should be on or off
   const isOnCall = (await xapi.Status.Call.get()) == '' ? false : true;
@@ -168,16 +216,21 @@ async function init() {
   const isSelfViewOn = (await xapi.Status.Video.Selfview.Mode.get() == 'On' ? true : false);
 
   if ((isOnCall || isStreaming) || isSelfViewOn) {
-    console.info({ Campfire_2_Info: `Video Active on Primary Codec` })
+    console.info({ Campfire_1_Info: `Video Active on Primary Codec` })
     await AZM.Command.Zone.Monitor.Start('Initialization');
   } else {
-    console.info({ Campfire_2_Info: `Video Inactive on Primary Codec` })
+    console.info({ Campfire_1_Info: `Video Inactive on Primary Codec` })
     await AZM.Command.Zone.Monitor.Stop('Initialization');
   }
 
   await StartSubscriptions()
 }
 
+/********************************
+      Function Definitions
+********************************/
+
+//Used to check which version of USB Passthrough is used, and to alter the subscription needed for automation
 async function checkUSBPassthroughState() {
   try {
     const hdmiPassthrough = await xapi.Status.Video.Output.HDMI.Passthrough.Status.get();
@@ -192,18 +245,45 @@ async function checkUSBPassthroughState() {
   return false;
 }
 
-async function updateCameraMode(mode) {
+// Used to updated the Campfire Camera Mode
+async function updateCameraMode(mode, cause) {
+  clearCameraAutomationTimeouts()
   let previous = activeCameraMode.clone()
   activeCameraMode = mode;
-  clearCameraAutomationTimeouts()
-  SendToNodes('CameraMode', activeCameraMode)
+  xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Info', Value: `${mode}: ${cameraModeDescriptions[mode]}` })
+  await setSpeakerTrack(mode)
+  await SendToNodes('CameraMode', activeCameraMode)
   await GMM.write('activeCameraMode', activeCameraMode)
   if (previous != activeCameraMode) {
-    console.log({ Campfire_2_Log: `Camera Mode Updated`, PreviousMode: previous, CurrentMode: activeCameraMode })
+    console.log({ Campfire_1_Log: `Camera Mode Updated`, PreviousMode: previous, CurrentMode: activeCameraMode, Cause: cause })
   }
 }
 
-//Runs Subscriptions found in Subscribe Object
+//Used to define the Speakertrack behavior in the Camera Modes
+async function setSpeakerTrack(mode) {
+  switch (mode) {
+    case 'Speaker':
+      await xapi.Command.Cameras.SpeakerTrack.Activate()
+      await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
+      console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
+      break;
+    case 'Everyone': case 'Conversation_FR':
+      await xapi.Command.Cameras.SpeakerTrack.Activate()
+      await xapi.Command.Cameras.SpeakerTrack.Frames.Activate()
+      console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
+      break;
+    case 'Conversation_SPK':
+      await xapi.Command.Cameras.SpeakerTrack.Activate()
+      await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
+      console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
+      break;
+    default:
+      console.warn({ Campfire_Node_Warn: `Camera Mode [${mode}] not defined.` })
+      break
+  }
+}
+
+//Runs Subscriptions found in Subscribe Object, allows for controls start of subscriptions
 async function StartSubscriptions() {
   const subs = Object.getOwnPropertyNames(Subscribe);
   subs.sort();
@@ -212,18 +292,22 @@ async function StartSubscriptions() {
     Subscribe[element]();
     mySubscriptions.push(element);
     Subscribe[element] = function () {
-      console.warn({ Campfire_2_Warn: `The [${element}] subscription is already active, unable to fire it again` });
+      console.warn({ Campfire_1_Warn: `The [${element}] subscription is already active, unable to fire it again` });
     };
   });
-  console.log({ Campfire_2_Log: 'Subscriptions Set', Details: { Total_Subs: subs.length, Active_Subs: mySubscriptions.join(', ') } });
+  console.log({ Campfire_1_Log: 'Subscriptions Set', Details: { Total_Subs: subs.length, Active_Subs: mySubscriptions.join(', ') } });
 };
 
+//Define subscriptions and run any other on boot actions requiring a status pull
 const Subscribe = {
   WidgetAction: function () {
     xapi.Event.UserInterface.Extensions.Widget.Action.on(Handle.Event.WidgetAction)
   },
   AZM_Zones: function () {
     AZM.Event.TrackZones.on(Handle.Event.AZM_Zones)
+  },
+  GMM_Receiver: function () {
+    GMM.Event.Receiver.on(Handle.Event.GMM_Receiver)
   },
   CallSuccessful: function () {
     xapi.Event.CallSuccessful.on(Handle.Event.CallSuccessful)
@@ -233,9 +317,16 @@ const Subscribe = {
   },
   SelfViewMode: function () {
     xapi.Status.Video.Selfview.Mode.on(Handle.Status.SelfViewMode)
+  },
+  StandbyStatus: function () {
+    xapi.Status.Standby.State.on(Handle.Status.StandbyStatus)
+  },
+  FramesStatus: function () {
+    xapi.Status.Cameras.SpeakerTrack.Frames.Status.on(Handle.Status.FramesStatus)
   }
 }
 
+//Clears timeouts and intervals contained within the Handle object
 function clearCameraAutomationTimeouts() {
   const list = Object.getOwnPropertyNames(Handle.Timeout.CameraMode)
   list.forEach(element => {
@@ -254,34 +345,61 @@ function clearCameraAutomationTimeouts() {
   })
 }
 
+//Used to discover the Node ConnectorId based on provided Serial number
+function findNodeCameraConnector(codecSerialNumber, cause) {
+  for (const device of CodecInfo.NodeCodecs) {
+    if (device.CodecSerialNumber == codecSerialNumber) {
+      return device.PrimaryCodec_QuadCamera_ConnectorId;
+    }
+  }
+  console.error({ Campfire_1_Error: `Unable to Node Camera ConnectorId using Serial [${codecSerialNumber}]`, Cause: cause })
+}
+
+function buildConversationTimeoutActivity() {
+  const zones = AudioMap.Zones.clone()
+  let list = {}
+  zones.forEach((el, i) => {
+    list[i + 1] = { label: el.Label, active: false, run: '' }
+  })
+  return list
+}
+
+// The Handle object contains Objects or Functions that are handled in another process, such as an interval, event or status change
 const Handle = {
   Timeout: {
     CameraMode: {
       OnSilence: { run: '' },
-      Focus: {
+      Speaker: {
         active: false,
         run: ''
       },
-      Conversation: {},
+      Conversation: buildConversationTimeoutActivity(),
       Spotlight: {
         active: false,
         run: ''
       }
     }
   },
-  Interval: {},
+  Interval: {
+    OnSilence: ''
+  },
   Event: {
     CallSuccessful: async function () {
       await AZM.Command.Zone.Monitor.Start('CallSuccessful')
     },
     CallDisconnect: async function () {
       await AZM.Command.Zone.Monitor.Stop('CallDisconnect')
+      await updateCameraMode(Settings.RoomTypeSettings.Campfire.Camera.Mode.Default, 'CallDisconnect')
+      await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Mode', Value: activeCameraMode })
     },
     WidgetAction: async function (action) {
       if (action.Type == 'released') {
         switch (action.WidgetId) {
           case 'Campfire~CampfirePro~CameraFeatures~Mode':
-          updateCameraMode(action.Value)
+            updateCameraMode(action.Value, 'Widget Action')
+            if (action.Value == 'Everyone') {
+              await composeCamera(false, [1, 2, 3, 4])
+            }
             break;
         }
       }
@@ -289,39 +407,96 @@ const Handle = {
         //Run Logic to Show information Camera Mode
       }
     },
+    GMM_Receiver: async function (message) {
+      if (message.App.includes('Campfire_Node')) {
+        switch (message.Value.Method) {
+          case 'PeopleCountUpdate': {
+            if (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase() == 'auto') {
+              if (message.Value.Data <= 0) {
+                peopleDataComposition.removeCamera(findNodeCameraConnector(message.Source.Id))
+              } else {
+                peopleDataComposition.addCamera(findNodeCameraConnector(message.Source.Id))
+              }
+            }
+          }
+        }
+      }
+    },
     AZM_Zones: async function (zonePayload) {
-      console.debug({ Campfire_2_Debug: `[${zonePayload.Zone.Label}] Zone state updated to [${zonePayload.Zone.State}]` })
+      console.debug({ Campfire_1_Debug: `[${zonePayload.Zone.Label}] Zone State updated to [${zonePayload.Zone.State}]`, ConnectorId: zonePayload.Connector.Id, SubId: zonePayload.Connector?.SubId })
       switch (Settings.RoomType.toLowerCase()) {
         case 'campfire pro':
           switch (activeCameraMode.toLowerCase()) {
-            case 'focus':
-              //If Focus the focus onJoin timeout is inactive and the Zone is high
-              if (!Handle.Timeout.CameraMode.Focus.active && zonePayload.Zone.State == `High`) {
-                //Set the focus timeout activity to true
-                Handle.Timeout.CameraMode.Focus.active = true;
+            case 'speaker':
+              //If Speaker the Speaker onJoin timeout is inactive and the Zone is high
+              if (!Handle.Timeout.CameraMode.Speaker.active && zonePayload.Zone.State == `High`) {
+                //Set the Speaker timeout activity to true
+                Handle.Timeout.CameraMode.Speaker.active = true;
 
-                //Set the focus timeout to false after the onjoin timeout clears
-                Handle.Timeout.CameraMode.Focus.run = setTimeout(function () {
-                  Handle.Timeout.CameraMode.Focus.active = false;
-                }, Settings.RoomTypeSettings.Campfire.Camera.Mode.Focus.TransitionTimeout.OnJoin);
+                //Set the Speaker timeout to false after the onjoin timeout clears
+                Handle.Timeout.CameraMode.Speaker.run = setTimeout(function () {
+                  Handle.Timeout.CameraMode.Speaker.active = false;
+                }, Settings.RoomTypeSettings.Campfire.Camera.Mode.Speaker.TransitionTimeout.OnJoin);
 
                 //Clear the on Room Silence Timout, and reset it
                 clearTimeout(Handle.Timeout.CameraMode.OnSilence)
+                clearInterval(Handle.Interval.OnSilence)
                 Handle.Timeout.CameraMode.OnSilence = setTimeout(async function () {
                   await composeCamera(true, [])
+                  if (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase() == 'auto') {
+                    Handle.Interval.OnSilence = setInterval(async function () {
+                      let peopleComposition = peopleDataComposition.get() == '' ? peopleDataComposition.DefaultComposition : peopleDataComposition.get();
+                      await composeCamera(true, peopleComposition)
+                    }, 2000)
+                  }
                 }, Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.TransitionTimeout.OnSilence)
 
                 //Compose the High Camera
                 await composeCamera(false, zonePayload.Assets.CameraConnectorId)
               }
               break;
-            case 'conversation':
+            case 'everyone':
+              clearTimeout(Handle.Timeout.CameraMode.OnSilence)
+              clearInterval(Handle.Interval.OnSilence)
+              break;
+            case 'conversation_spk': case 'conversation_fr':
+              //New High Zone Comes In, add camera to composition
+              //Start Zone Timeout
+              // On Timout Exit, Check Zone State, If still high, set smaller timeout
+              if (!Handle.Timeout.CameraMode.Conversation[zonePayload.Zone.Id].active && zonePayload.Zone.State == `High`) {
+                //Set the Conversation timeout activity to true
+                Handle.Timeout.CameraMode.Conversation[zonePayload.Zone.Id].active = true;
+                conversationComposition.addCamera(zonePayload.Assets.CameraConnectorId)
+
+                //Set the Conversation timeout to false after the onjoin timeout clears
+                clearTimeout(Handle.Timeout.CameraMode.OnSilence)
+                clearInterval(Handle.Interval.OnSilence)
+                function runHandler(timeout) {
+                  Handle.Timeout.CameraMode.Conversation[zonePayload.Zone.Id].run = setTimeout(function () {
+                    let checkState = AZM.Status.Audio.Zone[zonePayload.Zone.Id].State.get()
+                    if (checkState != 'High') {
+                      Handle.Timeout.CameraMode.Conversation[zonePayload.Zone.Id].active = false;
+                      conversationComposition.removeCamera(zonePayload.Assets.CameraConnectorId)
+
+                      if (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase() == 'auto') {
+                        Handle.Interval.OnSilence = setInterval(async function () {
+                          let peopleComposition = peopleDataComposition.get() == '' ? peopleDataComposition.DefaultComposition : peopleDataComposition.get();
+                          await composeCamera(true, peopleComposition)
+                        }, 2000)
+                      }
+                    } else {
+                      runHandler(Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.Continue)
+                    }
+                  }, timeout);
+                }
+
+                runHandler(Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.OnJoin)
+
+                //Compose the High Camera
+                await composeCamera(false, zonePayload.Assets.CameraConnectorId)
+              }
               break
-            case 'spotlight':
-              break
-            case 'quad':
-              break
-            case 'manual':
+            default:
               break
           }
           break;
@@ -338,12 +513,17 @@ const Handle = {
           await AZM.Command.Zone.Monitor.Stop('SelviewMode Off Outside Call')
         }
       }
+    },
+    StandbyStatus: async function (level) {
+      await SendToNodes('StandbyState', level)
+    },
+    FramesStatus: async function (state) {
+      await SendToNodes('FramesState', state)
     }
   }
 }
 
-let peopleCountOverView = Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Composition.clone();
-
+// Determines the default overview camera composition based on user set configuration
 function determineDefaultComposition() {
   let defaultComposition = []
   switch (Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode.toLowerCase()) {
@@ -354,44 +534,57 @@ function determineDefaultComposition() {
       defaultComposition = 'off'
       break;
     case 'auto': default:
-      defaultComposition = peopleCountOverView.clone();
+      defaultComposition = peopleDataComposition.get();
       break;
   }
-  console.info({ Campfire_2_Info: `Default Overview Composition is [${defaultComposition}]` });
   return defaultComposition;
 }
 
-let lastknownComposition = []
-
+// Used to compose a new MainSource composition based on a provided array
 async function composeCamera(isDefault = false, ...connectorIds) {
 
   let composition = connectorIds.toString().split(',')
+  if (isDefault) {
+    composition = determineDefaultComposition()
+  }
+
+  if (composition == 'off' || composition == '') {
+    return
+  }
 
   const checkForCompositionChanges = (composition.length === lastknownComposition.length) && composition.every((value, index) => value === lastknownComposition[index]);
   //Only switch to the new camera arrangement if it's different from the last known state
   if (!checkForCompositionChanges) {
-    if (isDefault) {
-      const defaultComposition = determineDefaultComposition();
-      if (defaultComposition != 'off') {
-        await xapi.Command.Video.Input.SetMainVideoSource({ ConnectorId: defaultComposition, Layout: 'Equal' });
-        composition = defaultComposition
-      }
-      composition = lastknownComposition
-    } else {
+    try {
       await xapi.Command.Video.Input.SetMainVideoSource({ ConnectorId: composition, Layout: 'Equal' });
+      console.log({ Campfire_1_Log: `Updating Camera Composition: ${pretty_Composition_Log(composition)}` })
+      lastknownComposition = composition.clone()
+    } catch (e) {
+      e.Context = 'Function: checkForCompositionChanges()'
+      console.error(e)
     }
-    console.info({ Campfire_2_Info: `Updating camera composition to [${composition}]` })
-    lastknownComposition = composition.clone()
   }
 }
 
+// Used to pair the Device Label with it's associated Camera ConnectorId to allow a readable print of the provided composition
+function pretty_Composition_Log(comp) {
+  const resultString = comp.map(number => {
+    const matchingItem = nodeInfo.find(item => item.PrimaryCodec_QuadCamera_ConnectorId === number.toString());
+    return matchingItem ? `[${matchingItem.Label}: ${number}]` : `Connector ID ${number} not found`;
+  }).join(', ');
+  return resultString;
+}
+
+//Used to delay an action where neccessary
 function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
 
-async function delayedStartup() {
+// Used to handle a device restart, on boot, the script runs too quickly, causing an error.
+// This slows that process down by checking the uptime
+async function delayedStartup(time = 120) {
   while (true) {
     const upTime = await xapi.Status.SystemUnit.Uptime.get()
 
-    if (upTime > 120) {
+    if (upTime > time) {
       await init()
       break;
     } else {
