@@ -31,8 +31,8 @@ or implied.
 */
 
 import xapi from 'xapi';
-import { Settings, CodecInfo, AudioMap } from './Campfire_2_Config_V_0-0-1';
-import { BuildInterface } from './Campfire_3_UserInterface_V_0-0-1';
+import { Settings, CodecInfo, AudioMap } from './Campfire_2_Config';
+import { BuildInterface } from './Campfire_3_UserInterface';
 import { GMM } from './GMM_Lite_Lib';
 
 const DevConfig = {
@@ -95,11 +95,11 @@ const Validate = {};
 Validate.Macros = async function (version = DevConfig.Version) {
   console.info({ Campfire_4_Info: `Checking Installed Macros for Campfire...` })
   const checklist = {
-    [`Campfire_1_Main_V_${version}`]: false,
-    [`Campfire_2_Config_V_${version}`]: false,
-    [`Campfire_3_UserInterface_V_${version}`]: false,
-    [`Campfire_4_Initialization_V_${version}`]: false,
-    [`Campfire_Node_V_${version}`]: false,
+    [`Campfire_1_Main`]: false,
+    [`Campfire_2_Config`]: false,
+    [`Campfire_3_UserInterface`]: false,
+    [`Campfire_4_Initialization`]: false,
+    [`Campfire_Node`]: false,
     "GMM_Lite_Lib": false,
     "AZM_Lib": false
   }
@@ -240,7 +240,7 @@ async function disableSolution(cause, showMessage = true) {
     });
   };
   console.error({ Error: `Unresolvable Error Detected`, Cause: cause, Action: 'Disabling Macro' });
-  await xapi.Command.Macros.Macro.Deactivate({ Name: `Campfire_2_Main_V_${DevConfig.Version}` });
+  await xapi.Command.Macros.Macro.Deactivate({ Name: `Campfire_2_Main` });
   await xapi.Command.Macros.Runtime.Restart();
 }
 
@@ -423,8 +423,6 @@ init.Phase2 = async function () {
     console.info({ Campfire_4_Info: `Campfire initialization Complete!` })
     resolve()
   })
-
-
 }
 
 async function Run_Setup() { await init.Phase1() }
