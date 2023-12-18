@@ -223,7 +223,8 @@ async function init() {
   //Check if the Codec is already in a state where VuMeter Monitoring should be on or off
   const isOnCall = (await xapi.Status.Call.get()) == '' ? false : true;
   const isStreaming = await checkUSBPassthroughState();
-  const isSelfViewOn = (await xapi.Status.Video.Selfview.Mode.get() == 'On' ? true : false);
+  const isSelfViewOn = (await xapi.Status.Video.Selfview.Mode.get()) == 'On' ? true : false;
+  const isSelfviewFull = (await xapi.Status.Video.Selfview.FullscreenMode.get()) == 'On' ? true : false;
 
   if ((isOnCall || isStreaming) || isSelfViewOn) {
     console.info({ Campfire_1_Info: `Video Active on Primary Codec` })
@@ -232,6 +233,9 @@ async function init() {
     console.info({ Campfire_1_Info: `Video Inactive on Primary Codec` })
     await AZM.Command.Zone.Monitor.Stop('Initialization');
   }
+
+  await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewShow', Value: isSelfViewOn == true ? 'On' : 'Off' });
+  await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewFullscreen', Value: isSelfViewOn == true ? 'On' : 'Off' });
 
   await StartSubscriptions()
 }
@@ -261,7 +265,9 @@ async function updateCameraMode(mode, cause) {
     clearCameraAutomationTimeouts() //ToDo - Review and Check for Errors
     let previous = activeCameraMode.clone()
     activeCameraMode = mode;
-    xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Info', Value: `${mode}: ${cameraModeDescriptions[mode]}` })
+    xapi.Command.UserInterface.Message.TextLine.Display({ Text: `Campfire: ${mode}`, Duration: 5, X: 10000, Y: 500 })
+    xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Info', Value: `${mode}: ${cameraModeDescriptions[mode]}` });
+    await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Mode', Value: activeCameraMode })
     await setSpeakerTrack(mode) // ToDo - Review and Check for Errors
     await SendToNodes('CameraMode', activeCameraMode) //ToDo - Review and Check for Errors
     await GMM.write('activeCameraMode', activeCameraMode)
@@ -333,8 +339,8 @@ const Subscribe = {
   CallDisconnect: function () {
     xapi.Event.CallDisconnect.on(Handle.Event.CallDisconnect)
   },
-  SelfViewMode: function () {
-    xapi.Status.Video.Selfview.Mode.on(Handle.Status.SelfViewMode)
+  SelfView: function () {
+    xapi.Status.Video.Selfview.on(Handle.Status.SelfView)
   },
   StandbyStatus: function () {
     xapi.Status.Standby.State.on(Handle.Status.StandbyStatus)
@@ -422,8 +428,8 @@ const Handle = {
   Event: {
     CallSuccessful: async function () {
       try {
-        await
-          await AZM.Command.Zone.Monitor.Start('CallSuccessful')
+        xapi.Command.UserInterface.Message.TextLine.Display({ Text: `Campfire: ${activeCameraMode}`, Duration: 5, X: 10000, Y: 500 })
+        await AZM.Command.Zone.Monitor.Start('CallSuccessful')
       } catch (e) {
         Handle.Error(e, 'Handle.Event.CallSuccessful', 400)
       }
@@ -432,7 +438,6 @@ const Handle = {
       try {
         await AZM.Command.Zone.Monitor.Stop('CallDisconnect')
         await updateCameraMode(Settings.RoomTypeSettings.Campfire.Camera.Mode.Default, 'CallDisconnect')
-        await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~Mode', Value: activeCameraMode })
       } catch (e) {
         Handle.Error(e, 'Handle.Event.CallDisconnect', 407)
       }
@@ -446,6 +451,16 @@ const Handle = {
               if (action.Value == 'Everyone') {
                 await composeCamera(false, [1, 2, 3, 4])
               }
+              break;
+          }
+        }
+        if (action.Type == 'changed') {
+          switch (action.WidgetId) {
+            case 'Campfire~CampfirePro~CameraFeatures~SelfviewShow':
+              await xapi.Command.Video.Selfview.Set({ Mode: action.Value });
+              break;
+            case 'Campfire~CampfirePro~CameraFeatures~SelfviewFullscreen':
+              await xapi.Command.Video.Selfview.Set({ FullscreenMode: action.Value });
               break;
           }
         }
@@ -561,18 +576,29 @@ const Handle = {
     }
   },
   Status: {
-    SelfViewMode: async function (mode) {
+    SelfView: async function (view) {
       try {
         const isOnCall = (await xapi.Status.Call.get()) == '' ? false : true;
-        if (!isOnCall) {
-          if (mode.safeToLowerCase() == 'on') {
-            await AZM.Command.Zone.Monitor.Start('SelviewMode On Outside Call')
-          } else {
-            await AZM.Command.Zone.Monitor.Stop('SelviewMode Off Outside Call')
+        if (view?.Mode) {
+          await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewShow', Value: view.Mode });
+          if (!isOnCall) {
+            switch (view.Mode) {
+              case 'On':
+                await AZM.Command.Zone.Monitor.Start('SelviewMode On Outside Call')
+                await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewShow', Value: 'On' });
+                break;
+              case 'Off':
+                await AZM.Command.Zone.Monitor.Stop('SelviewMode Off Outside Call')
+                await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewShow', Value: 'Off' });
+                break;
+            }
           }
         }
+        if (view?.FullscreenMode) {
+          await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewFullscreen', Value: view.FullscreenMode });
+        }
       } catch (e) {
-        Handle.Error(e, 'Handle.Status.SelfviewMode', 540)
+        Handle.Error(e, 'Handle.Status.Selfview', 540)
       }
     },
     StandbyStatus: async function (level) {

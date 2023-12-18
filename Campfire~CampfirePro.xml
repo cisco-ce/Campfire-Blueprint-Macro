@@ -1,5 +1,5 @@
 <Extensions>
-  <Version>1.11</Version>
+  <Version>*</Version>
   <Panel>
     <Order>1</Order>
     <PanelId>Campfire~CampfirePro</PanelId>
@@ -13,7 +13,7 @@
       <Id>7a656f12b26716cb60721aa6e4ca69cf2465eedc52ab8f678f88ec8847a313fe</Id>
     </CustomIcon>
     <Page>
-      <Name>Camera Features</Name>
+      <Name>Campfire Controls</Name>
       <Row>
         <Name>Info</Name>
         <Widget>
@@ -47,6 +47,31 @@
               <Name>Conversation (FR)</Name>
             </Value>
           </ValueSpace>
+        </Widget>
+      </Row>
+      <Row>
+        <Name>Selfview</Name>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~SelfviewShowText</WidgetId>
+          <Name>Show</Name>
+          <Type>Text</Type>
+          <Options>size=1;fontSize=small;align=center</Options>
+        </Widget>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~SelfviewShow</WidgetId>
+          <Type>ToggleButton</Type>
+          <Options>size=1</Options>
+        </Widget>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~SelfviewFullscreenText</WidgetId>
+          <Name>Fullscreen</Name>
+          <Type>Text</Type>
+          <Options>size=1;fontSize=small;align=center</Options>
+        </Widget>
+        <Widget>
+          <WidgetId>Campfire~CampfirePro~CameraFeatures~SelfviewFullscreen</WidgetId>
+          <Type>ToggleButton</Type>
+          <Options>size=1</Options>
         </Widget>
       </Row>
       <PageId>Campfire~CampfirePro~CameraFeatures</PageId>
