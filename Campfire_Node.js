@@ -37,8 +37,7 @@ import { GMM } from './GMM_Lib';
 let PrimaryInfo = '';
 let PrimaryConnection = '';
 let SendToPrimiry = '';
-
-let NodeReady = false;
+let mutedOverviewPTZPosition = {}
 
 let peopleCountCurrent = 0;
 
@@ -58,19 +57,30 @@ const init = {
       info = JSON.parse(info)
 
       PrimaryConnection = new GMM.Connect.IP(info.Authentication.Username, info.Authentication.Passcode, info.IpAddress.toString());
-      console.log(PrimaryConnection)
+
       SendToPrimiry = async function (method, data) {
         console.debug(method, data)
         const request = await PrimaryConnection.status({ Method: method, Data: data }).post()
         return request
       }
-      NodeReady = true;
       let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
-      if (peopleCount > 0) { peopleCountCurrent = 1 }
-      await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
+      if (peopleCount > 0) { peopleCountCurrent = 1 };
+      await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent);
     } catch (e) {
       PrimaryInfo = 'Unset';
       await GMM.write('PrimaryInfo', 'Unset');
+    }
+    try {
+      mutedOverviewPTZPosition = await GMM.read('mutedOverviewPTZPosition');
+      mutedOverviewPTZPosition.CameraId = await findQuadConnectorId();
+    } catch (e) {
+      mutedOverviewPTZPosition = {
+        Pan: -39,
+        Tilt: -492,
+        Zoom: 8210,
+        CameraId: await findQuadConnectorId()
+      }
+      await GMM.write('mutedOverviewPTZPosition', mutedOverviewPTZPosition)
     }
   },
   Phase2: async function () {
@@ -81,12 +91,18 @@ const init = {
 
 async function Run_Setup() { await init.Phase1() }
 
-async function updatPrimaryInfo(info) {
+async function updatePrimaryInfo(info) {
   await GMM.write('PrimaryInfo', info)
   console.info({ Campfire_Node_Info: `Primary Node Connectivity Information Updated` })
   let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
   if (peopleCount > 0) { peopleCountCurrent = 1 }
   await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
+}
+
+async function saveMutedPTZ(ptz) {
+  await GMM.write('mutedOverviewPTZPosition', ptz);
+  console.info({ Campfire_Node_Info: `PTZ Position when muted Updated` });
+  mutedOverviewPTZPosition.CameraId = await findQuadConnectorId();
 }
 
 async function configureNode() {
@@ -134,12 +150,22 @@ async function runCameraMode(mode) {
 }
 
 
-GMM.Event.Receiver.on(event => {
+GMM.Event.Receiver.on(async event => {
   if (event.App.includes('Campfire_1_Main')) {
-    console.log(event)
     switch (event.Value.Method) {
       case 'Initialization':
-        updatPrimaryInfo(event.Value.Data);
+        let payload = atob(event.Value.Data)
+        payload = JSON.parse(payload)
+        if (payload.StandbyStatus.toLowerCase() == 'off') { xapi.Command.Standby.Deactivate(); } else { xapi.Command.Standby.Activate(); };
+        updateNodeLabel(payload.RollAssignment, event.Source.Id);
+        runCameraMode(payload.CameraMode);
+        console.log({ Campfire_Node_Log: `Initialization Payload Received`, CameraMode: payload.CameraMode, StandbyStatus: payload.StandbyStatus, RollAssignment: 'Node' });
+        saveMutedPTZ(payload.MutedPTZ);
+        delete payload.StandbyStatus;
+        delete payload.RollAssignment;
+        delete payload.CameraMode;
+        delete payload.MutedPTZ;
+        updatePrimaryInfo(btoa(JSON.stringify(payload)));
         break;
       case 'RollAssignment':
         updateNodeLabel(event.Value.Data, event.Source.Id)
@@ -161,9 +187,23 @@ GMM.Event.Receiver.on(event => {
       case 'CameraMode':
         runCameraMode(event.Value.Data);
         break;
+      case 'MutedPTZ':
+        if (event.Value.Data == 'Activate') {
+          xapi.Command.Camera.PositionSet(mutedOverviewPTZPosition);
+        }
+        break;
     }
   }
 })
+
+async function findQuadConnectorId() {
+  const cams = await xapi.Status.Cameras.Camera.get();
+  let id = '';
+
+  cams.forEach(el => { if (el.Model.toLowerCase().includes('quad')) { id = el.id } });
+
+  return id
+}
 
 xapi.Status.RoomAnalytics.PeopleCount.Current.on(async event => {
   if (event > 0) {

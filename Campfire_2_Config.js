@@ -55,8 +55,8 @@ const Settings = {
           },
           Conversation: {
             TransitionTimeout: {
-              OnJoin: 5000,                     // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
-              Continue: 2500                    // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
+              OnJoin: 20000,                     // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
+              Continue: 150000                    // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
             }
           },
           Everyone: {
@@ -87,7 +87,7 @@ const CodecInfo = {
     Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared accross all node codecs. Only accessed when the Mode is set to Common
   },
   PrimaryCodec: {
-    Label: 'Zone_0',                          // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
+    Label: 'North [A1]',                          // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
     PrimaryCodec_QuadCamera_Id: '0',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
     CodecSerialNumber: '0000000000',          // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Primary Codec
     Authentication: {
@@ -97,7 +97,7 @@ const CodecInfo = {
   },
   NodeCodecs: [
     {
-      Label: 'North [A1]',                    // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
+      Label: 'East [A2]',                    // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
       PrimaryCodec_QuadCamera_Id: '1',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
       CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
       IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
@@ -108,22 +108,15 @@ const CodecInfo = {
     },
     // For the reamining Node Codecs, follow the same format as above
     {
-      Label: 'East [A2]',                            
+      Label: 'South [A3]',                            
       PrimaryCodec_QuadCamera_Id: '2',         
       CodecSerialNumber: '0000000000',         
       IpAddress: '10.X.X.X',                  
       Authentication: { Username: 'admin', Passcode: '' }
     },
     {
-      Label: 'South [A3]',
-      PrimaryCodec_QuadCamera_Id: '3',
-      CodecSerialNumber: '0000000000',
-      IpAddress: '10.X.X.X',
-      Authentication: { Username: 'admin', Passcode: '' }
-    },
-    {
       Label: 'West [A4]',
-      PrimaryCodec_QuadCamera_Id: '4',
+      PrimaryCodec_QuadCamera_Id: '3',
       CodecSerialNumber: '0000000000',
       IpAddress: '10.X.X.X',
       Authentication: { Username: 'admin', Passcode: '' }
