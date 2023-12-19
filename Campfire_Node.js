@@ -31,7 +31,7 @@ or implied.
 */
 
 import xapi from 'xapi';
-import { GMM } from './GMM_Lib_Lite';
+import { GMM } from './GMM_Lib';
 
 
 let PrimaryInfo = '';
@@ -133,14 +133,9 @@ async function runCameraMode(mode) {
       await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
       console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
       break;
-    case 'Everyone': case 'Conversation_FR':
+    case 'Everyone': case 'Conversation':
       await xapi.Command.Cameras.SpeakerTrack.Activate()
       await xapi.Command.Cameras.SpeakerTrack.Frames.Activate()
-      console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
-      break;
-    case 'Conversation_SPK':
-      await xapi.Command.Cameras.SpeakerTrack.Activate()
-      await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
       console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
       break;
     case 'Muted':

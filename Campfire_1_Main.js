@@ -142,7 +142,7 @@ const cameraModeDescriptions = {
 }
 
 //Default PTZ Position for all Quadcameras when someone actively mutes a the room
-const mutedOverviewPTZPosition = { Pan: -39, Tilt: -492, Zoom: 8210 }
+const mutedOverviewPTZPosition = { Pan: -39, Tilt: -492, Zoom: 8210, Lens: 'Wide' }
 
 // Used to track and implement the Active Campfire Camera mode
 let activeCameraMode = '';
@@ -370,12 +370,19 @@ async function composeCamera(isDefault = false, ...connectorIds) {
     //Only switch to the new camera arrangement if it's different from the last known state
     if (!checkForCompositionChanges) {
       try {
+        let primaryQuadavailable = false;
 
-        await pauseSpeakerTrack(composition)
+        composition.forEach(el => {
+          if (el == CodecInfo.PrimaryCodec.PrimaryCodec_QuadCamera_ConnectorId) { primaryQuadavailable = true }
+        })
+
+        if (primaryQuadavailable) {
+          await xapi.Command.Cameras.SpeakerTrack.BackgroundMode.Deactivate();
+        } else {
+          await xapi.Command.Cameras.SpeakerTrack.BackgroundMode.Activate()
+        }
 
         await xapi.Command.Video.Input.SetMainVideoSource({ ConnectorId: composition, Layout: 'Equal' });
-
-        await resumeSpeakerTrack(composition)
 
         console.info({ Campfire_1_Info: `Updating Camera Composition: ${prettyCompositionLog_nodeInfo(composition)}` })
         lastknownComposition = composition.clone()
@@ -427,25 +434,6 @@ async function findPrimaryQuadCameraId() {
   return id;
 };
 
-// Used to handle Speakertrack on the Primary Codec, when updating a camera composition
-async function pauseSpeakerTrack() {
-  let primaryQuadConfigured = false;
-
-  currentComposition.forEach(el => {
-    if (el == CodecInfo.PrimaryCodec.PrimaryCodec_QuadCamera_ConnectorId) { primaryQuadConfigured = true }
-  })
-
-  return new Promise(async resolve => {
-    if (primaryQuadConfigured && spkState) {
-      console.debug({ Campfire_1_Debug: `Primary Quadcamera found in Composition, Pausing Speakertrack` })
-      await xapi.Command.Cameras.SpeakerTrack.BackgroundMode.Activate();
-      resolve()
-    } else {
-      resolve()
-    }
-  })
-}
-
 // Used to pair the Device Label with it's associated Camera ConnectorId to allow a readable print of the provided composition
 function prettyCompositionLog_nodeInfo(comp) {
   const resultString = comp.map(number => {
@@ -453,25 +441,6 @@ function prettyCompositionLog_nodeInfo(comp) {
     return matchingItem ? `[${matchingItem.Label}: ${number}]` : `Connector ID ${number} not found`;
   }).join(', ');
   return resultString;
-}
-
-// Used to handle Speakertrack on the Primary Codec, when updating a camera composition
-async function resumeSpeakerTrack() {
-  let primaryQuadConfigured = false;
-
-  currentComposition.forEach(el => {
-    if (el == CodecInfo.PrimaryCodec.PrimaryCodec_QuadCamera_ConnectorId) { primaryQuadConfigured = true }
-  })
-
-  return new Promise(async resolve => {
-    if (primaryQuadConfigured && spkState) {
-      console.debug({ Campfire_1_Debug: `Primary Quadcamera found in Composition, Resuming Speakertrack` })
-      await xapi.Command.Cameras.SpeakerTrack.BackgroundMode.Deactivate()
-      resolve()
-    } else {
-      resolve()
-    }
-  })
 }
 
 // Used to execute the Muted Automation in Campfire
@@ -483,8 +452,8 @@ async function runMuteState() {
   await SendToNodes('MutedPTZ', 'Activate');
   await composeCamera(true, [])
   if (spkState) {
-    await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
-    await xapi.Command.Cameras.SpeakerTrack.Deactivate()
+    await xapi.Command.Cameras.SpeakerTrack.Frames.Activate()
+    await xapi.Command.Cameras.SpeakerTrack.Activate()
     await xapi.Command.Camera.PositionSet(mutedOverviewPTZPosition);
   }
   console.info({ Campfire_1_Info: `Microphones Muted, setting muted overview PTZ position` })
@@ -510,8 +479,8 @@ async function setSpeakerTrack(mode) {
         console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
         break;
       case 'Muted':
-        await xapi.Command.Cameras.SpeakerTrack.Deactivate()
-        await xapi.Command.Cameras.SpeakerTrack.Frames.Deactivate()
+        await xapi.Command.Cameras.SpeakerTrack.Activate()
+        await xapi.Command.Cameras.SpeakerTrack.Frames.Activate()
         console.info({ Campfire_Node_Info: `Camera Mode changed to [${mode}]` })
         break;
       default:
@@ -641,6 +610,7 @@ Handle.Event = {
     try {
       xapi.Command.UserInterface.Message.TextLine.Display({ Text: `Campfire: ${activeCameraMode.replace(/_/gm, ' ')}`, Duration: 5, X: 10000, Y: 500 })
       await AZM.Command.Zone.Monitor.Start('CallSuccessful')
+      composeCamera(true, [])
     } catch (e) {
       Handle.Error(e, 'Handle.Event.CallSuccessful', 400)
     }
