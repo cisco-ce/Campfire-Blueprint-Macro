@@ -7,7 +7,7 @@ License at
 All use of the material herein must be in accordance with the terms of
 the License. All rights not expressly granted by the License are
 reserved. Unless required by applicable law or agreed to separately in
-writing, stware distributed under the License is distributed on an "AS
+writing, software distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 *********************************************************x
@@ -19,7 +19,7 @@ or implied.
  * 
  ********************************************************
  * 
- * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTROBUTE
+ * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTRIBUTE
  * 
  ********************************************************
  * 
@@ -54,7 +54,7 @@ Array.prototype.includish = function (value) {
 };
 
 
-// Enables a Clean Cloning of an Object withoutaltering the original object
+// Enables a Clean Cloning of an Object without altering the original object
 Object.prototype.clone = Array.prototype.clone = function () {
   if (Object.prototype.toString.call(this) === '[object Array]') {
     var clone = [];
@@ -133,7 +133,7 @@ class CameraCompositionTracker {
           Const/Var/Let
 ********************************/
 
-//Test that shows when a specific camera mode is slected
+//Test that shows when a specific camera mode is selected
 const cameraModeDescriptions = {
   Speaker: 'Maintain focus on the active speaker in your room, so your audience doesn\'t lose sight of them',
   Everyone: 'Promote Equity in your space, leveraging all 4 cameras and Frames Camera Intelligence',
@@ -153,19 +153,19 @@ let previousCameraMode = Settings.RoomTypeSettings.Campfire.Camera.Mode.Default.
 // Used to track the currentCamera Composition
 let currentComposition = [];
 
-// Used to track the last known Camera Composition, primarly used to prevent excessive SetMainSource Changes
+// Used to track the last known Camera Composition, primarily used to prevent excessive SetMainSource Changes
 let lastknownComposition = [];
 
 // Data about the Node Codecs, used for logging and updating node Information
 let nodeInfo = [];
 
-// Initialize the array used to track the PeopleCount compostion
+// Initialize the array used to track the PeopleCount composition
 const peopleDataComposition = new CameraCompositionTracker([], [1, 2, 3, 4], 'PeopleCount');
 
-// Initialize the array used to track the Conversation compostion
+// Initialize the array used to track the Conversation composition
 const conversationComposition = new CameraCompositionTracker([], [1, 2, 3, 4], 'Conversation');
 
-// Used to check the lasknown audio zone trigger in Camera Mode Speaker, helps clean up logs
+// Used to check the last known audio zone trigger in Camera Mode Speaker, helps clean up logs
 let lastknownSpeaker_ZoneId = 0;
 
 //Used to check if Speakertracking is available on this codec
@@ -280,7 +280,7 @@ async function init() {
 
   if ((isOnCall || isStreaming) || isSelfViewOn) { await AZM.Command.Zone.Monitor.Start('Initialization'); } else { await AZM.Command.Zone.Monitor.Stop('Initialization'); };
 
-  // Check Selfview mode and fullscreen mode, then update the campfire UI extentsion
+  // Check Selfview mode and fullscreen mode, then update the campfire UI extension
   await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewShow', Value: isSelfViewOn == true ? 'On' : 'Off' });
   await xapi.Command.UserInterface.Extensions.Widget.SetValue({ WidgetId: 'Campfire~CampfirePro~CameraFeatures~SelfviewFullscreen', Value: isSelfviewFull == true ? 'On' : 'Off' });
   console.warn({ Campfire_1_Warn: `Campfire Blueprint Initialized!` })
@@ -323,7 +323,7 @@ function clearCameraAutomationTimeouts() { // ToDo - Review for Errors
     const list = Object.getOwnPropertyNames(Handle.Timeout.CameraMode)
     list.forEach(element => {
       switch (element.safeToLowerCase()) {
-        case 'onsilince':
+        case 'onsilence':
           clearTimeout(Handle.Timeout.CameraMode.OnSilence.run)
           break;
         case 'speaker':
@@ -395,7 +395,7 @@ async function composeCamera(isDefault = false, ...connectorIds) {
   }
 }
 
-//Used to delay an action where neccessary
+//Used to delay an action where necessary
 function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
 
 // Determines the default overview camera composition based on user set configuration
@@ -523,7 +523,7 @@ async function updateCameraMode(mode, cause) {
 }
 
 /********************************
-      Subscriptoin Definitions
+      Subscription Definitions
 ********************************/
 
 //Runs Subscriptions found in Subscribe Object, allows for controls start of subscriptions
@@ -638,7 +638,7 @@ Handle.Event = {
             } else {
               xapi.Command.UserInterface.Message.Prompt.Display({
                 Title: `You're Microphones are Muted`,
-                Text: `Campfire Modes won't take effect until you unmmute your microphones.`,
+                Text: `Campfire Modes won't take effect until you Unmute your Microphones.`,
                 Duration: 8,
                 FeedbackId: `campfire~unmute~microphones~prompt`,
                 "Option.1": 'Unmute Microphones',
@@ -701,7 +701,7 @@ Handle.Event = {
               if (!Handle.Timeout.CameraMode.Speaker.active && zonePayload.Zone.State == `High`) {
                 if (lastknownSpeaker_ZoneId != zonePayload.Zone.Id) {
                   lastknownSpeaker_ZoneId = zonePayload.Zone.Id.clone()
-                  console.info({ Campfire_1_Info: `New Speaker Aquired in [${zonePayload.Zone.Label}] Zone || Id: [${zonePayload.Zone.Id}]` })
+                  console.info({ Campfire_1_Info: `New Speaker Acquired in [${zonePayload.Zone.Label}] Zone || Id: [${zonePayload.Zone.Id}]` })
                 }
                 //Set the Speaker timeout activity to true
                 Handle.Timeout.CameraMode.Speaker.active = true;
@@ -712,7 +712,7 @@ Handle.Event = {
                   Handle.Timeout.CameraMode.Speaker.active = false;
                 }, Settings.RoomTypeSettings.Campfire.Camera.Mode.Speaker.TransitionTimeout.OnJoin);
 
-                //Clear the on Room Silence Timout, and reset it
+                //Clear the on Room Silence Timeout, and reset it
                 clearTimeout(Handle.Timeout.CameraMode.OnSilence)
                 clearInterval(Handle.Interval.OnSilence)
                 Handle.Timeout.CameraMode.OnSilence = setTimeout(async function () {
@@ -778,7 +778,7 @@ Handle.Event = {
                         }, 2000)
                       }
                     } else {
-                      console.debug({ Campfire_1_Debug: `Zone [${zonePayload.Zone.Label}] conversattion still active, continuing the conversation for Zone Id: [${zonePayload.Zone.Id}]` })
+                      console.debug({ Campfire_1_Debug: `Zone [${zonePayload.Zone.Label}] conversation still active, continuing the conversation for Zone Id: [${zonePayload.Zone.Id}]` })
                       runHandler(Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.Continue)
                     }
                   }, timeout);

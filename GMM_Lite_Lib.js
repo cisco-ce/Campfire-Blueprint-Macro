@@ -49,7 +49,7 @@ export const GMM = {
           Description: {
             1: 'Memory_Functions is a Macro the acts like a simple database, allowing you to read and write data from you current project',
             2: 'Memory_Storage is accessed by either the original Memory_Functions Macro or the GMM_Lib Macro',
-            3: 'Memory_Storage deos not need to be activated, and should remain deactivated to limit the # of active macros on your Room Device',
+            3: 'Memory_Storage does not need to be activated, and should remain deactivated to limit the # of active macros on your Room Device',
             4: 'To learn how to use either macro, please reference the guides below',
             Guides: {
               'Global Macro Messaging': 'https://roomos.cisco.com/macros/Global%20Macro%20Messaging',
@@ -183,7 +183,7 @@ export const GMM = {
         const b64_reg = /^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?$/
         if (CommonUsername == '' && CommonPassword == '') {
           throw {
-            '⚠ GMM Error ⚠': 'Common Authentication Parameters not found, unable to contruct GMM.Connect.IP class'
+            '⚠ GMM Error ⚠': 'Common Authentication Parameters not found, unable to construct GMM.Connect.IP class'
           }
         } else if (CommonPassword == '' && b64_reg.test(CommonUsername)) {
           this.Params = {
@@ -242,14 +242,14 @@ export const GMM = {
           throw {
             '⚠ GMM Error ⚠': 'Username parameter was missing from method: .passAuth(username, password)',
             Class: 'GMM.Connect.IP',
-            Action: 'Provide authentication to class contructor'
+            Action: 'Provide authentication to class constructor'
           }
         }
         if (password == '') {
           throw {
             '⚠ GMM Error ⚠': 'Password parameter was missing from method: .passAuth(username, password)',
             Class: 'GMM.Connect.IP',
-            Action: 'Provide authentication to class contructor'
+            Action: 'Provide authentication to class constructor'
           }
         }
         this.Payload.Source['Auth'] = btoa(`${username}:${password}`)
@@ -268,7 +268,7 @@ export const GMM = {
         }
         if (JSON.stringify(this.Payload).length > GMM.DevAssets.maxPayloadSize) {
           throw ({
-            '⚠ GMM Error ⚠': `GMM Connect IP paylod exceed maximum character limit`,
+            '⚠ GMM Error ⚠': `GMM Connect IP payload exceed maximum character limit`,
             MaxLimit: GMM.DevAssets.maxPayloadSize,
             Payload: {
               Size: JSON.stringify(this.Payload).length,

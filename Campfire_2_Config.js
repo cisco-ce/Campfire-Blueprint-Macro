@@ -10,24 +10,23 @@ reserved. Unless required by applicable law or agreed to separately in
 writing, software distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
-*********************************************************
+*********************************************************x
 
  * Author:                  Robert(Bobby) McGonigle Jr
  *                          Technical Marketing Engineer
  *                          Cisco Systems
- *                          bomcgoni@cisco.com
- *
+ * 
  ********************************************************
- *
- * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTROBUTE
- *
+ * 
+ * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTRIBUTE
+ * 
  ********************************************************
- *
+ * 
  * Description:
- *   -
- *
+ *   - 
+ * 
  * Started: November 20, 2023
- * Updated: Dec 8, 2023
+ * Updated: Dec 19, 2023
 */
 
 const Settings = {
@@ -67,9 +66,9 @@ const Settings = {
 
 const CodecInfo = {
   Authentication: {
-    Mode: 'Common',                           // DefaultValue: 'Common' || AcceptedValues: <'Common', 'Independant'> || Description: Define whether to use Common or Independant login information for each node codec
-    Common_Username: 'admin',                 // DefaultValue: String || AcceptedValues: String || Description: The username shared accross all node codecs. Only accessed when the Mode is set to Common
-    Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared accross all node codecs. Only accessed when the Mode is set to Common
+    Mode: 'Common',                           // DefaultValue: 'Common' || AcceptedValues: <'Common', 'Independent'> || Description: Define whether to use Common or Independent login information for each node codec
+    Common_Username: 'admin',                 // DefaultValue: String || AcceptedValues: String || Description: The username shared across all node codecs. Only accessed when the Mode is set to Common
+    Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared across all node codecs. Only accessed when the Mode is set to Common
   },
   PrimaryCodec: {
     Label: 'North [A1]',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
@@ -87,11 +86,11 @@ const CodecInfo = {
       CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
       IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
       Authentication: {           
-        Username: 'admin',                    // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Indpendant, assign the username for this Node Codec
-        Passcode: ''                          // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Indpendant, assign the passcode for this Node Codec
+        Username: 'admin',                    // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Independent, assign the username for this Node Codec
+        Passcode: ''                          // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Independent, assign the passcode for this Node Codec
       }
     },
-    // For the reamining Node Codecs, follow the same format as above
+    // For the remaining Node Codecs, follow the same format as above
     {
       Label: 'South [A3]',                            
       PrimaryCodec_QuadCamera_Id: '3',         
@@ -115,17 +114,19 @@ const AudioMap = {
       Size: 4,                  // DefaultValue: 4 || AcceptedValue: Integer || Description: Set the sample size for AZM Audio Collection
       Rate_In_Ms: 500           // DefaultValue: 4 || AcceptedValue: 10-1000 || Description: Set the sample rate for AZM Audio Collection
     },
-    GlobalThreshhold: {
-      Mode: 'On',               // DefaultValue: 'On' || AcceptedValue: <'On', 'Off'> || Description: On: Enable Global Audio Thresholds for All Audio Zones; Off: Enable Independant Audio Thresholds for All Audio Zones
-      High: 25,                 // DefaultValue: 35   || AcceptedValue: 1-60          || Description: Set the High Global Threshhold
-      Low: 15                   // DefaultValue: 20   || AcceptedValue: 1-60          || Description: Set the High Global Threshhold
+    GlobalThreshold: {
+      Mode: 'On',               // DefaultValue: 'On' || AcceptedValue: <'On', 'Off'> || Description: On: Enable Global Audio Thresholds for All Audio Zones; Off: Enable Independent Audio Thresholds for All Audio Zones
+      High: 25,                 // DefaultValue: 35   || AcceptedValue: 1-60          || Description: Set the High Global Threshold
+      Low: 15                   // DefaultValue: 20   || AcceptedValue: 1-60          || Description: Set the High Global Threshold
     }
   },
   Zones: [                      // Description: The Zones node allows you to define one or more audio zones for the AZM Automation. This is an array.
-    // Below is an example of an Ethernet/AES67 Microphone Zone
+    /*
+      Below is an example configuration for a single Ethernet/AES67 Microphone Zone
+    */
     {
       Label: 'Example Ethernet Configuration',  // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
-      Independent_Threshhold: {
+      Independent_Threshold: {
         High: 35,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
         Low: 20                                 // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
       },
@@ -149,11 +150,11 @@ const AudioMap = {
       ---
         NOTE: Not recommended to mix Microphone Types as of December 2023
       ---
-      Below is an example of an Analog Microphone Zone
+      Below is an example configuration for a single Analog Microphone Zone
     */
     {
       Label: 'Example Analog Configuration',    // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
-      Independent_Threshhold: {
+      Independent_Threshold: {
         High: 15,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
         Low: 9                                  // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
       },

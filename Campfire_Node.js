@@ -15,11 +15,10 @@ or implied.
  * Author:                  Robert(Bobby) McGonigle Jr
  *                          Technical Marketing Engineer
  *                          Cisco Systems
- *                          bomcgoni@cisco.com
  * 
  ********************************************************
  * 
- * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTROBUTE
+ * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTRIBUTE
  * 
  ********************************************************
  * 
@@ -36,7 +35,7 @@ import { GMM } from './GMM_Lib';
 
 let PrimaryInfo = '';
 let PrimaryConnection = '';
-let SendToPrimiry = '';
+let SendToPrimary = '';
 let mutedOverviewPTZPosition = {}
 
 let peopleCountCurrent = 0;
@@ -58,14 +57,14 @@ const init = {
 
       PrimaryConnection = new GMM.Connect.IP(info.Authentication.Username, info.Authentication.Passcode, info.IpAddress.toString());
 
-      SendToPrimiry = async function (method, data) {
+      SendToPrimary = async function (method, data) {
         console.debug(method, data)
         const request = await PrimaryConnection.status({ Method: method, Data: data }).post()
         return request
       }
       let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
       if (peopleCount > 0) { peopleCountCurrent = 1 };
-      await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent);
+      await SendToPrimary('PeopleCountUpdate', peopleCountCurrent);
     } catch (e) {
       PrimaryInfo = 'Unset';
       await GMM.write('PrimaryInfo', 'Unset');
@@ -96,7 +95,7 @@ async function updatePrimaryInfo(info) {
   console.info({ Campfire_Node_Info: `Primary Node Connectivity Information Updated` })
   let peopleCount = await xapi.Status.RoomAnalytics.PeopleCount.Current.get()
   if (peopleCount > 0) { peopleCountCurrent = 1 }
-  await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
+  await SendToPrimary('PeopleCountUpdate', peopleCountCurrent)
 }
 
 async function saveMutedPTZ(ptz) {
@@ -106,7 +105,7 @@ async function saveMutedPTZ(ptz) {
 }
 
 async function configureNode() {
-  console.info({ Campfire_Node_Info: `Cofiguring Campfire Node...` })
+  console.info({ Campfire_Node_Info: `Configuring Campfire Node...` })
   await xapi.Command.Conference.DoNotDisturb.Activate({ Timeout: 1440 }).catch(e => { processError(e, 'Failed DND Activation') });
   console.info({ "Campfire_Node_Info": "Infinite DND Activated" });
   await xapi.Config.Standby.Control.set('Off').catch(e => { processError(e, 'Failed Setting Standby Mode Config') });
@@ -116,7 +115,7 @@ async function configureNode() {
   await xapi.Config.Audio.Output.InternalSpeaker.Mode.set('Off').catch(e => { processError(e, 'Failed Setting InternalSpeaker Config') });
   await xapi.Config.Standby.Halfwake.Mode.set('Manual').catch(e => { processError(e, 'Failed Setting Halfwake Mode Config') });
   await xapi.Config.RoomAnalytics.PeopleCountOutOfCall.set('On');
-  console.info({ Campfire_Node_Info: `Cofiguring Campfire Node Configuration Complete!` })
+  console.info({ Campfire_Node_Info: `Configuring Campfire Node Configuration Complete!` })
 }
 
 function processError(err, context) {
@@ -210,7 +209,7 @@ xapi.Status.RoomAnalytics.PeopleCount.Current.on(async event => {
   } else {
     peopleCountCurrent = 0
   }
-  await SendToPrimiry('PeopleCountUpdate', peopleCountCurrent)
+  await SendToPrimary('PeopleCountUpdate', peopleCountCurrent)
 })
 
 async function updateNodeLabel(data, primarySerial) {
@@ -222,7 +221,7 @@ async function updateNodeLabel(data, primarySerial) {
   await xapi.Command.SystemUnit.SignInBanner.Clear()
   await xapi.Command.SystemUnit.SignInBanner.Set({}, `Campfire Blueprint Installed
   Label: [${label}] || SystemRole: [Node] || Index: [${index}]
-  Primary Codec Idetnitfier: [${primarySerial}]
+  Primary Codec Identifier: [${primarySerial}]
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Configuration for Campfire must be done through the Primary Codec`);
 }

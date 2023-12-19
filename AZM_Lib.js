@@ -13,16 +13,15 @@ or implied.
 *********************************************************
 
  * Author(s):               Robert(Bobby) McGonigle Jr
- *                          Technical Marketing Engineering, Techincal Leader
+ *                          Technical Marketing Engineering, Technical Leader
  *                          Cisco Systems
- *                          bomcgoni@cisco.com
  * 
  * Consulting Engineer(s)   Gerardo Chaves                    William Mills
  *                          Leader, Systems Engineering       Technical Solutions Specialist
  *                          Cisco Systems                     Cisco Systems
  * 
  *                          Tore Bjolseth                     Tobias Brodtkorb
- *                          Engineering Technical Leader      Technical Marketing Engineering, Techincal Leader
+ *                          Engineering Technical Leader      Technical Marketing Engineering, Technical Leader
  *                          Cisco Systems                     Cisco Systems
  * 
  * Released: November 20, 2023
@@ -35,7 +34,7 @@ or implied.
  *     tailored to enable Audio Based Automations
  *   - This Library is intended to be imported into a Project
  * 
- *   - Dependancies
+ *   - Dependencies
  *     - The Device xAPI
  *     - Audio Configuration Object (Refer to AZM Guide)
  * 
@@ -70,7 +69,7 @@ import xapi from 'xapi';
     PPMeter, NoiseLevel and LoudSpeakerActivity as the previous value 
     until new information comes in
   
-  This allows for all audio within a zone to be evauluated synchronously
+  This allows for all audio within a zone to be evaluated synchronously
 
   When set to false, the data is not manipulated and Audio Data will 
     be evaluated asynchronously
@@ -257,7 +256,7 @@ let AudioBucket = { Ethernet: {}, Analog: {}, USB: {} }
 
 /* 
   This class tracks and processes incoming Ethernet Audio Data per Connector
-  It's instantialed in the AudioBucket Object
+  It's instantiated in the AudioBucket Object
   The run Method is called Later when the Audio Connector Event is subscribed too
   It will collect all information until a Max Setting, then process the data for
     the AZMe.Event.TrackZones subscription
@@ -272,7 +271,7 @@ class Ethernet_Bucket {
     this.State = 'Unset';  //High, Low, Unset
     this.SubStates = {}
     this.bin = this.setSubIdProperties();
-    this.threshholds = this.setAudioThreshholds()
+    this.thresholds = this.setAudioThresholds()
     console.AZM.E_BucketDebug(`New [Ethernet] Bucket instantiated || Bucket: [Connector: ${this.ConnectorId}, SubId: ${this.ConnectorSubIds}] || ZoneId: [${this.ZoneId}]`)
   }
   setSubIdProperties() {
@@ -290,36 +289,36 @@ class Ethernet_Bucket {
   }
 
   //Determine which threshold to abide by, based on the Audio Configuration
-  setAudioThreshholds() {
+  setAudioThresholds() {
     let lowThresh;
     let highThresh;
 
-    if (AudioConfiguration.Settings.GlobalThreshhold.Mode.toLowerCase() == 'on') {
-      lowThresh = AudioConfiguration.Settings.GlobalThreshhold.Low.clone()
-      highThresh = AudioConfiguration.Settings.GlobalThreshhold.High.clone()
-      console.AZM.E_BucketDebug(`Global Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (AudioConfiguration.Settings.GlobalThreshold.Mode.toLowerCase() == 'on') {
+      lowThresh = AudioConfiguration.Settings.GlobalThreshold.Low.clone()
+      highThresh = AudioConfiguration.Settings.GlobalThreshold.High.clone()
+      console.AZM.E_BucketDebug(`Global Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
       return { High: highThresh, Low: lowThresh }
     }
 
-    if (parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low) > 0 || parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High) > 0) {
-      lowThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low.clone()
-      highThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High.clone()
-      console.AZM.E_BucketDebug(`Independant Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low) > 0 || parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High) > 0) {
+      lowThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low.clone()
+      highThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High.clone()
+      console.AZM.E_BucketDebug(`Independent Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
       return { High: highThresh, Low: lowThresh }
     }
 
-    if (AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High == undefined || AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low == undefined) {
-      if (AudioConfiguration.Settings.GlobalThreshhold.Low != undefined || AudioConfiguration.Settings.GlobalThreshhold.High != undefined) {
-        lowThresh = AudioConfiguration.Settings.GlobalThreshhold.Low.clone()
-        highThresh = AudioConfiguration.Settings.GlobalThreshhold.High.clone()
-        console.AZM.E_BucketDebug(`Independant Threshold no found, reverting to Global Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High == undefined || AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low == undefined) {
+      if (AudioConfiguration.Settings.GlobalThreshold.Low != undefined || AudioConfiguration.Settings.GlobalThreshold.High != undefined) {
+        lowThresh = AudioConfiguration.Settings.GlobalThreshold.Low.clone()
+        highThresh = AudioConfiguration.Settings.GlobalThreshold.High.clone()
+        console.AZM.E_BucketDebug(`Independent Threshold no found, reverting to Global Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
         return { High: highThresh, Low: lowThresh }
       } else {
         throw Error(JSON.stringify({ message: `High and Low Thresholds not defined on [Ethernet] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
       }
     }
 
-    throw Error(JSON.stringify({ message: `Unable to set Audio Threshholds on [Ethernet] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
+    throw Error(JSON.stringify({ message: `Unable to set Audio Thresholds on [Ethernet] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
   }
 
   run(data, callback) {
@@ -340,9 +339,9 @@ class Ethernet_Bucket {
           console.AZM.E_BucketDebug(`VuMeter Bin Ethernet SubId [${subElement.id}] cleared || ZoneId: [${this.ZoneId}]`)
 
           //Compare Average VU against Threshold and set SubId state
-          if (process_vu_meter.Average >= this.threshholds.High) {
+          if (process_vu_meter.Average >= this.thresholds.High) {
             this.SubStates[subElement.id] = 'High'
-          } else if (process_vu_meter.Average <= this.threshholds.Low) {
+          } else if (process_vu_meter.Average <= this.thresholds.Low) {
             this.SubStates[subElement.id] = 'Low'
           } else {
             //May implement a Middle state in the future?
@@ -403,7 +402,7 @@ class Ethernet_Bucket {
 
 /* 
   This class tracks and processes incoming Analog(Microphone) Audio Data per Connector
-  It's instantialed in the AudioBucket Object
+  It's instantiated in the AudioBucket Object
   The run Method is called Later when the Audio Connector Event is subscribed too
   It will collect all information until a Max Setting, then process the data for
     the AZMe.Event.TrackZones subscription
@@ -416,39 +415,39 @@ class Analog_Bucket {
     this.Assets = assets;
     this.State = 'Unset';  //High, Low, Unset
     this.bin = { VuMeter: [], PPMeter: [], NoiseLevel: [], LoudspeakerActivity: [] }
-    this.threshholds = this.setAudioThreshholds()
+    this.thresholds = this.setAudioThresholds()
     console.AZM.A_BucketDebug(`New [Analog] Bucket instantiated || Bucket: [Connector: ${this.ConnectorId} || ZoneId: [${this.ZoneId}]`)
   }
-  setAudioThreshholds() {
+  setAudioThresholds() {
     let lowThresh;
     let highThresh;
 
-    if (AudioConfiguration.Settings.GlobalThreshhold.Mode.toLowerCase() == 'on') {
-      lowThresh = AudioConfiguration.Settings.GlobalThreshhold.Low.clone()
-      highThresh = AudioConfiguration.Settings.GlobalThreshhold.High.clone()
-      console.AZM.A_BucketDebug(`Global Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (AudioConfiguration.Settings.GlobalThreshold.Mode.toLowerCase() == 'on') {
+      lowThresh = AudioConfiguration.Settings.GlobalThreshold.Low.clone()
+      highThresh = AudioConfiguration.Settings.GlobalThreshold.High.clone()
+      console.AZM.A_BucketDebug(`Global Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
       return { High: highThresh, Low: lowThresh }
     }
 
-    if (parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low) > 0 || parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High) > 0) {
-      lowThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low.clone()
-      highThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High.clone()
-      console.AZM.A_BucketDebug(`Independant Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low) > 0 || parseInt(AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High) > 0) {
+      lowThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low.clone()
+      highThresh = AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High.clone()
+      console.AZM.A_BucketDebug(`Independent Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
       return { High: highThresh, Low: lowThresh }
     }
 
-    if (AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.High == undefined || AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshhold.Low == undefined) {
-      if (AudioConfiguration.Settings.GlobalThreshhold.Low != undefined || AudioConfiguration.Settings.GlobalThreshhold.High != undefined) {
-        lowThresh = AudioConfiguration.Settings.GlobalThreshhold.Low.clone()
-        highThresh = AudioConfiguration.Settings.GlobalThreshhold.High.clone()
-        console.AZM.A_BucketDebug(`Independant Threshold no found, reverting to Global Threshold set on ZoneId [${this.ZoneId}] || Threshholds >> High [${highThresh}] || Low [${lowThresh}]`)
+    if (AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.High == undefined || AudioConfiguration.Zones[this.ZoneId - 1].Independent_Threshold.Low == undefined) {
+      if (AudioConfiguration.Settings.GlobalThreshold.Low != undefined || AudioConfiguration.Settings.GlobalThreshold.High != undefined) {
+        lowThresh = AudioConfiguration.Settings.GlobalThreshold.Low.clone()
+        highThresh = AudioConfiguration.Settings.GlobalThreshold.High.clone()
+        console.AZM.A_BucketDebug(`Independent Threshold no found, reverting to Global Threshold set on ZoneId [${this.ZoneId}] || Thresholds >> High [${highThresh}] || Low [${lowThresh}]`)
         return { High: highThresh, Low: lowThresh }
       } else {
         throw Error(JSON.stringify({ message: `High and Low Thresholds not defined on [Analog] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
       }
     }
 
-    throw Error(JSON.stringify({ message: `Unable to set Audio Threshholds on [Analog] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
+    throw Error(JSON.stringify({ message: `Unable to set Audio Thresholds on [Analog] bucket`, ZoneId: this.ZoneId, Connector: this.ConnectorId, SubId: this.ConnectorSubIds, Tip: `Review the AudioMap configuration` }))
   }
   run(data, callback) {
     this.bin.VuMeter.push(data.VuMeter)
@@ -463,9 +462,9 @@ class Analog_Bucket {
       this.bin = { VuMeter: [], PPMeter: [], NoiseLevel: [], LoudspeakerActivity: [] }
       console.AZM.A_BucketDebug(`VuMeter Bin Analog ConnectorId [${this.ConnectorId}] cleared || ZoneId: [${this.ZoneId}]`)
 
-      if (process_vu_meter.Average >= this.threshholds.High) {
+      if (process_vu_meter.Average >= this.thresholds.High) {
         this.State = 'High'
-      } else if (process_vu_meter.Average <= this.threshholds.Low) {
+      } else if (process_vu_meter.Average <= this.thresholds.Low) {
         this.State = 'Low'
       } else {
         //May implement a Middle state in the future?
@@ -496,7 +495,7 @@ class Analog_Bucket {
 
 /* 
   This class tracks and processes incoming USB Audio Data per Connector
-  It's instantialed in the AudioBucket Object
+  It's instantiated in the AudioBucket Object
   The run Method is called Later when the Audio Connector Event is subscribed too
   It will collect all information until a Max Setting, then process the data for
     the AZMe.Event.TrackZones subscription
@@ -544,7 +543,7 @@ function Process_BIN_Data(dataset) {
   return { Average: avg, Peak: peak, Sample: dataset.clone() } // ToDo. State, and Zone info needs to be applied here
 }
 
-async function discoverEthernetStreamNamebySerial(serial) {
+async function discoverEthernetStreamNameBySerial(serial) {
   const peripherals = await xapi.Status.Peripherals.ConnectedDevice.get()
 
   const streamName = peripherals.find(item => item.Name.includes('Microphone') && item.SerialNumber === serial);
@@ -576,7 +575,7 @@ async function Append_Ethernet_ConnectorId_By_StreamName() {
             console.AZM.SetupDebug(`StreamName match on Zone Index [${index}], assigning Ethernet ConnectorId [${parseInt(mic.id)}] to Audio Zone Configuration`);
             AudioConfiguration.Zones[index].MicrophoneAssignment.Connectors[i].Id = parseInt(mic.id);
           } else {
-            const streamName = await discoverEthernetStreamNamebySerial(conx.Serial);
+            const streamName = await discoverEthernetStreamNameBySerial(conx.Serial);
             if (mic.StreamName == streamName) {
               console.AZM.SetupDebug(`StreamName match on Zone Index [${index}], assigning Ethernet ConnectorId [${parseInt(mic.id)}] to Audio Zone Configuration`);
               AudioConfiguration.Zones[index].MicrophoneAssignment.Connectors[i].Id = parseInt(mic.id);
@@ -630,7 +629,7 @@ let ZoneSetupStatus = false;
 
 
 /* 
-  This function evaulates the ZoneSetupStatus
+  This function evaluates the ZoneSetupStatus
   If this Status is false, it will throw an error with context to point
     a developer in the right direction to resolve a conflict with the Audio Setup
 */
@@ -697,7 +696,7 @@ function Instantiate_Audio_Zones_And_Buckets() {
         break;
       default:
         //Throw Error on unknown Microphone Assignment Type
-        throw Error(JSON.stringify({ message: `Audio Connector Type [${element.MicrophoneAssignment.Type}] not accepted`, Tip: `Accpeted Types: Ethernet, Analog, USB.` }))
+        throw Error(JSON.stringify({ message: `Audio Connector Type [${element.MicrophoneAssignment.Type}] not accepted`, Tip: `Accepted Types: Ethernet, Analog, USB.` }))
     }
   })
 }
@@ -825,11 +824,11 @@ function Normalize_Ethernet_Audio_Data(payload) {
 /* 
   This function serves as a replacement Subscription for xEvent Audio [Type] Connectors path
   This will determine which audio events are required in your config and will subscribe on your behalf
-  This will also evaluate all audio information comming in and
-    Update Audio Buckes and Zone Classes
+  This will also evaluate all audio information coming in and
+    Update Audio Buckets and Zone Classes
     Callback a High Middle or Low state based on your Audio Configuration
   
-  The purpose of this object is to only provide a Callback when a relevant change has occured in your environment, not all audio data
+  The purpose of this object is to only provide a Callback when a relevant change has occurred in your environment, not all audio data
 */
 AZM.Event.TrackZones.on = function (callBack) {
   checkZoneSetup('Unable to subscribe to AZM.Event.TrackZones')

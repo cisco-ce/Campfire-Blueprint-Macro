@@ -10,24 +10,23 @@ reserved. Unless required by applicable law or agreed to separately in
 writing, software distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
-*********************************************************
+*********************************************************x
 
  * Author:                  Robert(Bobby) McGonigle Jr
  *                          Technical Marketing Engineer
  *                          Cisco Systems
- *                          bomcgoni@cisco.com
  * 
  ********************************************************
  * 
- * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTROBUTE
+ * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTRIBUTE
  * 
  ********************************************************
  * 
  * Description:
  *   - 
- *
+ * 
  * Started: November 20, 2023
- * Updated: Dec 8, 2023
+ * Updated: Dec 19, 2023
 */
 
 import xapi from 'xapi';
@@ -164,7 +163,7 @@ async function SetupNodeClassConnector() {
       return request
     }
   }
-  if (CodecInfo.Authentication.Mode.toLowerCase() == 'independant') {
+  if (CodecInfo.Authentication.Mode.toLowerCase() == 'independent') {
     CodecInfo.NodeCodecs.forEach(element => {
       subNodes[element.CodecSerialNumber] = new GMM.Connect.IP(element.Authentication.Username, element.Authentication.Passcode, element.IpAddress);
     });
@@ -194,7 +193,7 @@ Validate.RoomScope = async function () {
 
       break;
     default:
-      console.warn({ Campfire_3_Warn: `RoomType not definied, unable to validate Room Scope: [${Settings.RoomType}]` })
+      console.warn({ Campfire_3_Warn: `RoomType not defined, unable to validate Room Scope: [${Settings.RoomType}]` })
       break;
   }
 }
