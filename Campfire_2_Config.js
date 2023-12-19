@@ -31,47 +31,32 @@ or implied.
 */
 
 const Settings = {
-  RoomType: 'Campfire Pro',             // DefaultValue: 'Campfire Pro' || AcceptedValues: <'Campfire Pro'> || Description: Define the RoomType [ NOTE: Future Use ]
-  RoomTypeSettings: {                   // Description: Settings that apply to the Configured Room Type
-    Campfire: {                                 //Description: Settings that apply to the Campfire Solution
-      Camera: {                                 //Description: Settings assoicited to Cameras
+  RoomType: 'Campfire Pro',                 // DefaultValue: 'Campfire Pro' || AcceptedValues: <'Campfire Pro'> || Description: Define the RoomType [ NOTE: Future Use ]
+  RoomTypeSettings: {                       // Description: Settings that apply to the Configured Room Type
+    Campfire: {
+      Camera: {
         UserInterface: {
-          Visibility: 'Auto',                   // DefaultValue: 'Auto' || AcceptedValues: <'Auto', 'Hidden'> || Description: Show/Hide the Campfire Controls UserInterface
-          Location: 'HomeScreenAndCallControls' // DefaultValue: 'HomeScreenAndCallControls' || AcceptedValues: Any Panel Location || Description: Specify the Campfire Controls location
+          Visibility: 'Auto',               // DefaultValue: 'Auto' || AcceptedValues: <'Auto', 'Hidden'> || Description: Show/Hide the Campfire Controls UserInterface
         },
         Default_Overview: {
-          Mode: 'Auto',                         // DefaultValue: 'On' || AcceptedValues: <'On', 'Off', 'Auto'> || Description: Set a Default Camera view when the room falls silent. On: Applies Composition, Off: Does Nothing, Auto: Use PeopleCount Data to determine the composition
-          Composition: [1, 2, 3, 4],            // DefaultValue: [1, 2, 3, 4] || AcceptedValues: Array || Description: Mode is set to On, set's this array of CameraIds when the room falls silent
+          Mode: 'Auto',                     // DefaultValue: 'Auto' || AcceptedValues: <'On', 'Off', 'Auto'> || Description: Set a Default Camera view when the room falls silent. On: Applies Composition, Off: Does Nothing, Auto: Use PeopleCount Data to determine the composition
+          Composition: [1, 2, 3, 4],        // DefaultValue: [1, 2, 3, 4] || AcceptedValues: Array || Description: Mode is set to On, set's this array of CameraIds when the room falls silent
           TransitionTimeout: {
-            OnSilence: 5000                     // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
+            OnSilence: 5000                 // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
           }
         },
         Mode: {
-          Default: 'Speaker',                   // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Conversation', 'Spotlight', 'Quad'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
+          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Conversation', 'Spotlight', 'Quad'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
           Speaker: {
             TransitionTimeout: {
-              OnJoin: 2500                      // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
+              OnJoin: 2500                  // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
             }
           },
           Conversation: {
             TransitionTimeout: {
-              OnJoin: 20000,                     // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
-              Continue: 150000                    // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
+              OnJoin: 20000,                // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
+              Continue: 15000               // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
             }
-          },
-          Everyone: {
-            //Future Use
-          },
-          Spotlight: {
-            Mode: 'Off',                        // DefaultValue: 'Off' || AcceptedValues: Integer in Milliseconds || Description: Enable/Disable Spotlight Mode
-            Source: 0,                          // DefaultValue: 0 || AcceptedValues: Integer || Description: Assign the CameraId of the Spotlight Camera
-            TransitionTimeout: {
-              OnJoin: 5000,                     // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
-              Continue: 2500                    // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
-            }
-          },
-          PresetnerTrack: {
-            //Future Use
           }
         }
       }
@@ -87,18 +72,18 @@ const CodecInfo = {
     Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared accross all node codecs. Only accessed when the Mode is set to Common
   },
   PrimaryCodec: {
-    Label: 'North [A1]',                          // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
-    PrimaryCodec_QuadCamera_Id: '0',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
+    Label: 'North [A1]',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
+    PrimaryCodec_QuadCamera_Id: '1',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
     CodecSerialNumber: '0000000000',          // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Primary Codec
     Authentication: {
-      Username: 'admin',                      // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Indpendant, assign the username for this Primary Codec
-      Passcode: ''                            // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Indpendant, assign the passcode for this Primary Codec
+      Username: 'admin',                      // DefaultValue: String || AcceptedValue: String || Description: Username for the Primary Codec, used for node communication the primary
+      Passcode: ''                            // DefaultValue: String || AcceptedValue: String || Description: Passcode for the Primary Codec, used for node communication the primary
     }
   },
   NodeCodecs: [
     {
-      Label: 'East [A2]',                    // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
-      PrimaryCodec_QuadCamera_Id: '1',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
+      Label: 'East [A2]',                     // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
+      PrimaryCodec_QuadCamera_Id: '2',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
       CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
       IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
       Authentication: {           
@@ -109,14 +94,14 @@ const CodecInfo = {
     // For the reamining Node Codecs, follow the same format as above
     {
       Label: 'South [A3]',                            
-      PrimaryCodec_QuadCamera_Id: '2',         
+      PrimaryCodec_QuadCamera_Id: '3',         
       CodecSerialNumber: '0000000000',         
       IpAddress: '10.X.X.X',                  
       Authentication: { Username: 'admin', Passcode: '' }
     },
     {
       Label: 'West [A4]',
-      PrimaryCodec_QuadCamera_Id: '3',
+      PrimaryCodec_QuadCamera_Id: '4',
       CodecSerialNumber: '0000000000',
       IpAddress: '10.X.X.X',
       Authentication: { Username: 'admin', Passcode: '' }
@@ -159,9 +144,13 @@ const AudioMap = {
         CameraId: 1                             // A more real world example of an Asset
       }
     },
-    //This ends the First Zone, add more Zones using the Same Format as above for Ethernet Microphones
-    //
-    // Below is an example of an Analog Microphone Zone
+    /*
+      This ends the First Zone, add more Zones using the Same Format as above for Ethernet Microphones
+      ---
+        NOTE: Not recommended to mix Microphone Types as of December 2023
+      ---
+      Below is an example of an Analog Microphone Zone
+    */
     {
       Label: 'Example Analog Configuration',    // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
       Independent_Threshhold: {

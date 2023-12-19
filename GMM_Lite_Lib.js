@@ -37,7 +37,7 @@ export const GMM = {
     MacroName: _main_macro_name()
   },
   DevConfig: {
-    version: '1.9.8_InDev2'
+    version: '1.9.8 LITE'
   },
   DevAssets: {
     filterAuthRegex: /[\\]*"Auth[\\]*"\s*:\s*[\\]*"([a-zA-Z0-9\/\+\=\_\-]*)\s*[\\]*"/gm,

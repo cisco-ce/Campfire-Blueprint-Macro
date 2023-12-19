@@ -28,23 +28,19 @@
         <Widget>
           <WidgetId>Campfire~CampfirePro~CameraFeatures~Mode</WidgetId>
           <Type>GroupButton</Type>
-          <Options>size=4;columns=2</Options>
+          <Options>size=4;columns=3</Options>
           <ValueSpace>
             <Value>
               <Key>Speaker</Key>
-              <Name>Speaker</Name>
+              <Name>Speaker 👤</Name>
             </Value>
             <Value>
               <Key>Everyone</Key>
-              <Name>Everyone</Name>
+              <Name>Everyone 👥</Name>
             </Value>
             <Value>
-              <Key>Conversation_SPK</Key>
-              <Name>Conversation (SPK)</Name>
-            </Value>
-            <Value>
-              <Key>Conversation_FR</Key>
-              <Name>Conversation (FR)</Name>
+              <Key>Conversation</Key>
+              <Name>Conversation 🗣️</Name>
             </Value>
           </ValueSpace>
         </Widget>
