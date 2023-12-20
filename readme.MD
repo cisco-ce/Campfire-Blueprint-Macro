@@ -104,6 +104,7 @@
 
 NOTE: Macro Installation requires several steps, and is best handled in the order outlined below.
 
+### Download Files
 1. Download a copy of the following files from this repository
   - Macros
     - AZM_Lib.js
@@ -117,61 +118,61 @@ NOTE: Macro Installation requires several steps, and is best handled in the orde
   - Panel Icon
     - campfire_panel_icon.png
 
-2. Node Codec Installation
-  1. Log into the Node Codec's Web Interface
-  - Navigate to the Macro Editor
-  - Press the **Import from file...** button
-    - Find the **Campfire_Node.js** file
-    - Save this Macro
-  - Press the **Import from file...** button
-    - Find the **GMM_Lite_Lib.js** file
-    - Save this Macro
-  - Activate the **Campfire_Node** Macro
-  - Refresh your Web Browser, a **Memory_Storage** macros should have spawned
-  - Leave the **GMM_Lite_Lib** Macro inactive
-    - **GMM_Lite_Lib** is imported in the **Campfire_Node** Macro and adds no value being active
-  - Repeat this Process for each Node Codec in your Room Build
-  - When complete, each Node Codec should have a the following Macros Installed
-    - Campfire_Node
-    - GMM_Lite_Lib
-    - Memory_Storage
+### Node Codec Installation
+1. Log into the Node Codec's Web Interface
+2. Navigate to the Macro Editor
+3. Press the **Import from file...** button
+  -  Find the **Campfire_Node.js** file
+  - Save this Macro
+4. Press the **Import from file...** button
+  - Find the **GMM_Lite_Lib.js** file
+  - Save this Macro
+5. Activate the **Campfire_Node** Macro
+6. Refresh your Web Browser, a **Memory_Storage** macros should have spawned
+7. Leave the **GMM_Lite_Lib** Macro inactive
+  - **GMM_Lite_Lib** is imported in the **Campfire_Node** Macro and adds no value being active
+8. Repeat this Process for each Node Codec in your Room Build
+9. When complete, each Node Codec should have a the following Macros Installed
+  - Campfire_Node
+  - GMM_Lite_Lib
+  - Memory_Storage
 
-3. Primary Codec Installation
+### Primary Codec Installation
 
-NOTE: This step should be started AFTER step 2.
+NOTE: Step 2 should be completed first, for a clean boot of the solution.
 
-  - Log into the Node Codec's Web Interface
-  - Navigate to the UserInterface Extension Editor
-  - Find the **Campfire_UserInterface.xml** file, drag and drop this into the UI Extensions Editor
-  - Save the Campfire UI Extension to the codec by selecting the blue arrow in the top right of the UI Extensions editor
-  - The Campfire Controls panel should be visible on the touch panel
-    - If the Campfire Icon is not visible, you can use the **campfire_panel_icon.png** image and upload this to the panel via the UI extensions editor. Be sure to re-save if you performed this step
-  - Navigate to the Macro Editor
-  - Press the **Import from file...** button
-    - Find the **AZM_Lib.js** file
-    - Save this Macro
-  - Press the **Import from file...** button
-    - Find the **Campfire_1_Main.js** file
-    - Save this Macro
-  - Press the **Import from file...** button
-    - Find the **Campfire_2_Config.js** file
-    - Save this Macro
-  - Press the **Import from file...** button
-    - Find the **Campfire_3_Initialization.js** file
-    - Save this Macro
-  - Press the **Import from file...** button
-    - Find the **GMM_Lite_Lib.js** file
-    - Save this Macro
-  - When complete, the Primary Codec should have a the following Macros installed
-    - AZM_Lib
-    - Campfire_1_Main
-    - Campfire_1_Main
-    - Campfire_1_Main
-    - GMM_Lite_Lib
-    - Memory_Storage
-  - _If_ you've already updated the **Campfire_2_Config** Macro, then activate the activate the **Campfire_1_Main** Macro
-    - _If_ **Campfire_2_Config** is **NOT** updated, please review the Configuration Section to learn how to configure the Campfire Macro
-    - Once updated, activate the activate the **Campfire_1_Main** Macro
+1. Log into the Node Codec's Web Interface
+2. Navigate to the UserInterface Extension Editor
+3. Find the **Campfire_UserInterface.xml** file, drag and drop this into the UI Extensions Editor
+4. Save the Campfire UI Extension to the codec by selecting the blue arrow in the top right of the UI Extensions editor
+5. The Campfire Controls panel should be visible on the touch panel
+ - If the Campfire Icon is not visible, you can use the **campfire_panel_icon.png** image and upload this to the panel via the UI extensions editor. Be sure to re-save if you performed this step
+6. Navigate to the Macro Editor
+7. Press the **Import from file...** button
+ - Find the **AZM_Lib.js** file
+ - Save this Macro
+8. Press the **Import from file...** button
+ - Find the **Campfire_1_Main.js** file
+ - Save this Macro
+9. Press the **Import from file...** button
+ - Find the **Campfire_2_Config.js** file
+ - Save this Macro
+10. Press the **Import from file...** button
+ - Find the **Campfire_3_Initialization.js** file
+ - Save this Macro
+11. Press the **Import from file...** button
+ - Find the **GMM_Lite_Lib.js** file
+ - Save this Macro
+12. When complete, the Primary Codec should have a the following Macros installed
+ - AZM_Lib
+ - Campfire_1_Main
+ - Campfire_1_Main
+ - Campfire_1_Main
+ - GMM_Lite_Lib
+ - Memory_Storage
+13. _If_ you've already updated the **Campfire_2_Config** Macro, then activate the activate the **Campfire_1_Main** Macro
+ - _If_ **Campfire_2_Config** is **NOT** updated, please review the Configuration Section to learn how to configure the Campfire Macro
+ - Once updated, activate the activate the **Campfire_1_Main** Macro
 
 ## Configuration
 
