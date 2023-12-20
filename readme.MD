@@ -146,37 +146,93 @@ NOTE: Step 2 should be completed first, for a clean boot of the solution.
 3. Find the **Campfire_UserInterface.xml** file, drag and drop this into the UI Extensions Editor
 4. Save the Campfire UI Extension to the codec by selecting the blue arrow in the top right of the UI Extensions editor
 5. The Campfire Controls panel should be visible on the touch panel
- - If the Campfire Icon is not visible, you can use the **campfire_panel_icon.png** image and upload this to the panel via the UI extensions editor. Be sure to re-save if you performed this step
+  - If the Campfire Icon is not visible, you can use the **campfire_panel_icon.png** image and upload this to the panel via the UI extensions editor. Be sure to re-save if you performed this step
 6. Navigate to the Macro Editor
 7. Press the **Import from file...** button
- - Find the **AZM_Lib.js** file
- - Save this Macro
+  - Find the **AZM_Lib.js** file
+  - Save this Macro
 8. Press the **Import from file...** button
- - Find the **Campfire_1_Main.js** file
- - Save this Macro
+  - Find the **Campfire_1_Main.js** file
+  - Save this Macro
 9. Press the **Import from file...** button
- - Find the **Campfire_2_Config.js** file
- - Save this Macro
+  - Find the **Campfire_2_Config.js** file
+  - Save this Macro
 10. Press the **Import from file...** button
- - Find the **Campfire_3_Initialization.js** file
- - Save this Macro
+  - Find the **Campfire_3_Initialization.js** file
+  - Save this Macro
 11. Press the **Import from file...** button
- - Find the **GMM_Lite_Lib.js** file
- - Save this Macro
+  - Find the **GMM_Lite_Lib.js** file
+  - Save this Macro
 12. When complete, the Primary Codec should have a the following Macros installed
- - AZM_Lib
- - Campfire_1_Main
- - Campfire_1_Main
- - Campfire_1_Main
- - GMM_Lite_Lib
- - Memory_Storage
+  - AZM_Lib
+  - Campfire_1_Main
+  - Campfire_2_Config
+  - Campfire_3_Initialization
+  - GMM_Lite_Lib
+  - Memory_Storage
 13. _If_ you've already updated the **Campfire_2_Config** Macro, then activate the activate the **Campfire_1_Main** Macro
- - _If_ **Campfire_2_Config** is **NOT** updated, please review the Configuration Section to learn how to configure the Campfire Macro
- - Once updated, activate the activate the **Campfire_1_Main** Macro
+  - _If_ **Campfire_2_Config** is **NOT** updated, please review the Configuration Section to learn how to configure the Campfire Macro
+  - Once updated, activate the activate the **Campfire_1_Main** Macro
 
 ## Configuration
 
-Though automating this would have been nice, the Campfire Blueprint does require some configuration before it can fully work. The solution needs to be given information about the assets you have setup in the space.
+### Before you Start 
+- The Campfire Blueprint needs to be given information about the assets you have setup in the space.
+- Please review and setup the Settings, CodecInfo, and AudioMap sections below in FULL.
+- All configuration [Objects](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Basics) are structured in a [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) format.
+- Navigate to the **Campfire_2_Config** Macro, and edit the Settings, CodecInfo, and AudioMap as needed
 
-NOTE: Each Campfire Blueprint configuration requires unique information about your assets. Each configuration should be unique and shouldn't be duplicated across systems, unless restoring an identical system from a backup.
+**NOTE**: Each Campfire Blueprint configuration requires unique information about your assets. Each configuration should be unique and shouldn't be duplicated across systems, unless restoring an identical system from a backup.
+
+### Configuring the Settings Object
+
+> Settings govern any items that are unique to the campfire blueprint itself, such as camera mode features, timeouts and default behaviors you may want to set. This object can be copied and applied to any Campfire Blueprint installation
+
+#### Code View
+```javascript
+const Settings = {
+  RoomType: 'Campfire Pro',                 // DefaultValue: 'Campfire Pro' || AcceptedValues: <'Campfire Pro'> || Description: Define the RoomType [ NOTE: Future Use ]
+  RoomTypeSettings: {                       // Description: Settings that apply to the Configured Room Type
+    Campfire: {
+      Camera: {
+        UserInterface: {
+          Visibility: 'Auto',               // DefaultValue: 'Auto' || AcceptedValues: <'Auto', 'Hidden'> || Description: Show/Hide the Campfire Controls UserInterface
+        },
+        Default_Overview: {
+          Mode: 'Auto',                     // DefaultValue: 'Auto' || AcceptedValues: <'On', 'Off', 'Auto'> || Description: Set a Default Camera view when the room falls silent. On: Applies Composition, Off: Does Nothing, Auto: Use PeopleCount Data to determine the composition
+          Composition: [1, 2, 3, 4],        // DefaultValue: [1, 2, 3, 4] || AcceptedValues: Array || Description: Mode is set to On, set's this array of CameraIds when the room falls silent
+          TransitionTimeout: {
+            OnSilence: 5000                 // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
+          }
+        },
+        Mode: {
+          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Conversation', 'Spotlight', 'Quad'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
+          Speaker: {
+            TransitionTimeout: {
+              OnJoin: 2500                  // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
+            }
+          },
+          Conversation: {
+            TransitionTimeout: {
+              OnJoin: 20000,                // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
+              Continue: 15000               // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Configuring the CodecInfo Object
+> CodecInfo contains unique information about the Primary and Node Codecs. This information is used to coordinate all devices to operate as 1 unit. This information is unique per space and should not be copied from one space to another
+
+#### Code View
+
+### Configuring the AudioMap Object
+> AudioMap allows you to define the AudioZones within your space. These zones teach the Primary Codec how to make use of your microphone data. This Object is the based object necessary to utilize the AZM Library and is unique per space.
+
+#### Code View
+
 - - -
