@@ -41,7 +41,7 @@
 ## Device Requirements
 
 ### Minimum RoomOS Software Version
-- RoomOS 11.8.X.X
+- RoomOS 11.8.X
 
 ### Registration Compatibility
 
@@ -105,7 +105,7 @@
 NOTE: Macro Installation requires several steps, and is best handled in the order outlined below.
 
 1. Download a copy of the following files from this repository
-  - Macros
+  1.1. Macros
     - AZM_Lib.js
     - Campfire_1_Main.js
     - Campfire_2_Config.js
