@@ -179,7 +179,7 @@ NOTE: Step 2 should be completed first, for a clean boot of the solution.
 ### Before you Start 
 - The Campfire Blueprint needs to be given information about the assets you have setup in the space.
 - Please review and setup the Settings, CodecInfo, and AudioMap sections below in FULL.
-- All configuration [Objects](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Basics) are structured in a [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) format.
+- All configuration [Objects](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Basics) are structured in a [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) format and all references to the configuration will be written in Dot Notation, or by [Property Accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors)
 - Navigate to the **Campfire_2_Config** Macro, and edit the Settings, CodecInfo, and AudioMap as needed
 
 **NOTE**: Each Campfire Blueprint configuration requires unique information about your assets. Each configuration should be unique and shouldn't be duplicated across systems, unless restoring an identical system from a backup.
@@ -225,6 +225,116 @@ const Settings = {
 }
 ```
 
+#### Settings.RoomType
+
+> Description: Governs the RoomType, currently, this feature is not fully implemented and may be removed
+
+- **Default Value**: 'Campfire Pro'
+- **Accepted Values**: ['Campfire Pro']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - Campfire Pro: Tells the Campfire Blueprint to operate campfire with using 4 speakertracking cameras
+
+#### Settings.RoomTypeSettings.Campfire.UserInterface.Visibility
+
+> Description: Allows you to alter the Campfire UI Extension
+
+- **Default Value**: 'Auto'
+- **Accepted Values**: ['Auto', 'Hidden']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - Auto: Shows the Campfire Controls Panel
+  - Hidden: Hidden: Hides the the Campfire Controls Panel
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode
+
+> Description: Change how the Default Overview MainSource composition when the room falls silent
+
+- **Default Value**: 'Auto'
+- **Accepted Values**: ['Auto', 'On', 'Off']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - Auto: The composition will be determined by the PeopleCountCurrent status reported by the Primary and Node Codecs
+  - On: The composition is hard set by the value provided in Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Composition
+  - Off: The default composition is turned off, and will remain on the last camera composition
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Composition
+
+> Description: When Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.Mode is set to On, it will rely on the composition outlined here
+
+- **Default Value**: [ 1, 2, 3, 4 ]
+- **Accepted Values**: 1-6, Max Array Size: 4
+- **DataType**: Integer Array
+- **Required**: Mode Dependant
+- **Value Definitions**:
+  - The Integers in this array correspond to the Camera Connector ID. By default, campfire is configured with 4 cameras, but can alter this setting to pick another camera or group of cameras
+
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Default_Overview.TransitionTimeout.OnSilence
+
+> Description: A timeout in milliseconds, that instructs the Campfire Blueprint to wait before composing the Default Overview MainsSource composition when all audio zones fall silent
+
+- **Default Value**: 5000
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: Not recommended to set this to anything below 500 or any value that takes far too much time.
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Mode.Default
+
+> Description: Set the Default Campfire Camera Mode. This will be applied when the script is first enabled, and any time the devices exits a call
+
+- **Default Value**: 'Speaker'
+- **Accepted Values**: ['Speaker', 'Everyone', 'Conversation']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - Speaker: Sets Speaker as the Default Camera Mode
+    - Updates the MainSource with the last captured active speaker with Closeup active. This mode has a configurable timeout to allow faster or slower switching.
+  - Everyone: Sets Everyone as the Default Camera Mode
+    -Updates the MainSource to all 4 cameras in a 2x2 grid with Frames active. This is a static mode. The speaker by a combination of the in room microphones and the Speakertracking Camera.
+  - Conversation: Sets Conversation as the Default Camera Mode
+    - Updates the MainSource dynamically to any and all active speakers with Closeup Active. This modes is configurable to allow faster or slower switching. The speaker by a combination of the in room microphones and the Speakertracking Camera.
+
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Mode.Speaker.TransitionTimeout.OnJoin
+
+> Description: A timeout in milliseconds, that instructs the Campfire Blueprint to wait when a New Active Speaker is determine while Campfire Camera Mode **Speaker** is active. This timeout allows that speaker to stay in view for the alloted time, before allowing a new speaker.
+
+- **Default Value**: 2500
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: Not recommended to set this to anything below 2000 or any value that takes far too much time.
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.OnJoin
+
+> Description: A timeout in milliseconds, that instructs the Campfire Blueprint to wait when a New Active Speaker is determine while Campfire Camera Mode **Conversation** is active. This timeout allows that speaker to stay in view for the alloted time. Note: Each Audio Zone configured has their own independent timeout and are handled separately.
+
+- **Default Value**: 20000
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: Not recommended to set this to anything below 10000 or any value that takes far too much time.
+
+#### Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.Continue
+
+> Description: A timeout in milliseconds, that instructs the Campfire Blueprint to continue to keep that Active Speaker in the MainSource Composition. This Timeout is set once Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.OnJoin has concluded on a specific audio zone. If this Zone's audio state is still _High_, then xthis timeout will start, else, it will remove this speaker from the MainSource composition
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+
 ### Configuring the CodecInfo Object
 > CodecInfo contains unique information about the Primary and Node Codecs. This information is used to coordinate all devices to operate as 1 unit. This information is unique per space and should not be copied from one space to another
 
@@ -236,3 +346,12 @@ const Settings = {
 #### Code View
 
 - - -
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
