@@ -10,7 +10,7 @@
 
 - - -
 
-## Table of Contents (TOC)
+## Table of Contents
 
 - [Campfire Best Practices](#campfire-best-practices)
 - [Key Terminology](#)
@@ -25,11 +25,11 @@
 - [3rd Party Hardware Integration](#)
 - [FAQ](#)
 
-> Press on the Menu Icon to come back to the Table of Contents <img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>
+> Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>](#)
 
 - - -
 
-## Campfire Best Practices
+## Campfire Best Practices [<img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>](#table-of-contents)
 - ToDo
 
 ## Key Terminology
