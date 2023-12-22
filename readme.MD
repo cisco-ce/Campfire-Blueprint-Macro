@@ -25,7 +25,7 @@
 - [3rd Party Hardware Integration](#)
 - [FAQ](#)
 
-> Press on the Menu Icon to come back to the Table of Contents <img src="/images/view-list-circle_100_w.png" alt="drawing" width="10"/>
+> Press on the Menu Icon to come back to the Table of Contents <img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>
 
 - - -
 
