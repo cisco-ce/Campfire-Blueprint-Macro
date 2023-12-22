@@ -13,26 +13,26 @@
 ## Table of Contents
 
 - [Campfire Best Practices](#campfire-best-practices)
-- [Key Terminology](#)
-- [Device Requirements](#)
-- [Support Information](#)
+- [Key Terminology](#key-terminology)
+- [Device Requirements](#device-requirements)
+- [Support Information](#support-information)
 - [User Guide](#user-guide)
-- [Macro Installation](#)
-- [Configuration](#)
-  - [Settings](#)
-  - [CodecInfo](#)
-  - [AudioMap](#)
-- [3rd Party Hardware Integration](#)
-- [FAQ](#)
+- [Macro Installation](#macro-installation)
+- [Configuration](#configuration)
+  - [Settings](#settings)
+  - [CodecInfo](#codecinfo)
+  - [AudioMap](#audiomap)
+- [3rd Party Hardware Integration](#3rd-party-hardware-integration)
+- [FAQ](#faq)
 
-> Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>](#)
+> Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#)
 
 - - -
 
-## Campfire Best Practices [<img src="/images/view-list-circle_100_w.png" alt="drawing" width="25"/>](#table-of-contents)
+## Campfire Best Practices [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 - ToDo
 
-## Key Terminology
+## Key Terminology [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 | **Term** | **Definition** |
 |---|---|
@@ -42,7 +42,7 @@
 | Node/Node Codec | References the codec(s) in the room design that report to the primary and functions as a modified peripheral for the Primary Codec. |
 | Audio Zone | A concept that defines a region of audio we use to assign microphone too. Each Audio Zone must be defined and mapped to a camera resource in order to enable the solution |                                                                              |
 
-## Device Requirements
+## Device Requirements [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 ### Minimum RoomOS Software Version
 - RoomOS 11.8.X
@@ -67,12 +67,12 @@
 |-------------------|----------------|--------------|----------------------|-------------|
 | Codec Pro         | Codec EQ       | 3            | Table Microphone Pro | 8           |
 
-## Support Information
+## Support Information [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 - All Macros are considered **Custom Code**. Any and all pieces Custom Code are **NOT** supported by Cisco. The base Hardware, Software and Device xAPI are covered by the product.
 - If you're considering deploying the Campfire Blueprint Macros we recommend you engage a Cisco Vendor Partner, not only for installation, but for configuration and ongoing support.
 - The Campfire Blueprint Macros are provided as is, please reference the code license.
 
-## User Guide
+## User Guide [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 ### User Interface
 - The Campfire Blueprint enables a new UserInterface Panel called **Campfire Controls**. This panel is accessible in both the HomeScreen and Call Controls.
@@ -104,7 +104,7 @@
 [![Campfire Touch Panel Mute Prompt](/images/campfire_mutenotice.png)](#)
 
 - - - 
-## Macro Installation
+## Macro Installation [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 NOTE: Macro Installation requires several steps, and is best handled in the order outlined below.
 
@@ -178,7 +178,7 @@ NOTE: Step 2 should be completed first, for a clean boot of the solution.
   - _If_ **Campfire_2_Config** is **NOT** updated, please review the Configuration Section to learn how to configure the Campfire Macro
   - Once updated, activate the activate the **Campfire_1_Main** Macro
 
-## Configuration
+## Configuration [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 ### Before you Start 
 - The Campfire Blueprint needs to be given information about the assets you have setup in the space.
@@ -188,7 +188,7 @@ NOTE: Step 2 should be completed first, for a clean boot of the solution.
 
 **NOTE**: Each Campfire Blueprint configuration requires unique information about your assets. Each configuration should be unique and shouldn't be duplicated across systems, unless restoring an identical system from a backup.
 
-### Configuring the Settings Object
+### Settings [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 > Settings govern any items that are unique to the campfire blueprint itself, such as camera mode features, timeouts and default behaviors you may want to set. This object can be copied and applied to any Campfire Blueprint installation
 
@@ -339,7 +339,7 @@ const Settings = {
   - NOTE: Not recommended to set this to anything below 10000 or any value that takes far too much time.
 
 
-### Configuring the CodecInfo Object
+### CodecInfo [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 > CodecInfo contains unique information about the Primary and Node Codecs. This information is used to coordinate all devices to operate as 1 unit. This information is unique per space and should not be copied from one space to another
 
 #### Code View
@@ -549,7 +549,7 @@ const CodecInfo = {
 - **Value Definitions**:
   - N/A
 
-### Configuring the AudioMap Object
+### AudioMap [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 > AudioMap allows you to define the AudioZones within your space. These zones teach the Primary Codec how to make use of your microphone data. This Object defined by the AZM Library Macro.
 
 #### Code View
@@ -771,3 +771,7 @@ const AudioMap = {
   - 
 
 - - -
+
+## 3rd Party Hardware Integration
+
+## FAQ
