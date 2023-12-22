@@ -327,25 +327,358 @@ const Settings = {
 
 > Description: A timeout in milliseconds, that instructs the Campfire Blueprint to continue to keep that Active Speaker in the MainSource Composition. This Timeout is set once Settings.RoomTypeSettings.Campfire.Camera.Mode.Conversation.TransitionTimeout.OnJoin has concluded on a specific audio zone. If this Zone's audio state is still _High_, then xthis timeout will start, else, it will remove this speaker from the MainSource composition
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: 15000
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
 - **Value Definitions**:
-  - 
+  - NOTE: Not recommended to set this to anything below 10000 or any value that takes far too much time.
 
 
 ### Configuring the CodecInfo Object
 > CodecInfo contains unique information about the Primary and Node Codecs. This information is used to coordinate all devices to operate as 1 unit. This information is unique per space and should not be copied from one space to another
 
 #### Code View
+```javascript
+const CodecInfo = {
+  Authentication: {
+    Mode: 'Common',                           // DefaultValue: 'Common' || AcceptedValues: <'Common', 'Independent'> || Description: Define whether to use Common or Independent login information for each node codec
+    Common_Username: 'admin',                 // DefaultValue: String || AcceptedValues: String || Description: The username shared across all node codecs. Only accessed when the Mode is set to Common
+    Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared across all node codecs. Only accessed when the Mode is set to Common
+  },
+  PrimaryCodec: {
+    Label: 'North',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
+    PrimaryCodec_QuadCamera_Id: '1',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
+    CodecSerialNumber: '0000000000',          // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Primary Codec
+    Authentication: {
+      Username: 'admin',                      // DefaultValue: String || AcceptedValue: String || Description: Username for the Primary Codec, used for node communication the primary
+      Passcode: ''                            // DefaultValue: String || AcceptedValue: String || Description: Passcode for the Primary Codec, used for node communication the primary
+    }
+  },
+  NodeCodecs: [
+    {
+      Label: 'East',                     // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
+      PrimaryCodec_QuadCamera_Id: '2',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
+      CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
+      IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
+      Authentication: {           
+        Username: 'admin',                    // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Independent, assign the username for this Node Codec
+        Passcode: ''                          // DefaultValue: String || AcceptedValue: String || Description: If CodecInfo.Authentication.Mode is set to Independent, assign the passcode for this Node Codec
+      }
+    },
+    // For the remaining Node Codecs, follow the same format as above
+    {
+      Label: 'South',                            
+      PrimaryCodec_QuadCamera_Id: '3',         
+      CodecSerialNumber: '0000000000',         
+      IpAddress: '10.X.X.X',                  
+      Authentication: { Username: 'admin', Passcode: '' }
+    },
+    {
+      Label: 'West',
+      PrimaryCodec_QuadCamera_Id: '4',
+      CodecSerialNumber: '0000000000',
+      IpAddress: '10.X.X.X',
+      Authentication: { Username: 'admin', Passcode: '' }
+    }
+  ]
+}
+```
+
+#### CodecInfo.Authentication.Mode
+
+> Description: Determine how the Campfire Blueprint will apply authentication in the macro.
+
+- **Default Value**: 'Common'
+- **Accepted Values**: ['Common','Independent']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - Common: For simplified deployment, use common auth against on all codecs defined within the scope of the Campfire Blueprint
+  - Independent: Apply separate auth details to each codec defined within the scope of the Campfire Blueprint
+
+#### CodecInfo.Authentication.Common_Username
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Common. Provide the Common Username to all codecs defined within the scope of the Campfire Blueprint. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.Authentication.Common_Passcode
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Common. Provide the Common Passcode to all codecs defined within the scope of the Campfire Blueprint. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.PrimaryCodec.Label
+
+> Description: Provide a name to help you better define where the Primary Codec when reviewing the macro logs
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: No
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.PrimaryCodec.PrimaryCodec_QuadCamera_Id
+
+> Description: This tells the Campfire Blueprint Macro which HDMI Input connector the Quadcamera of the Primary Codec is plugged into. 
+
+- **Default Value**: 1
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**: 
+  - N/A
+
+#### CodecInfo.PrimaryCodec.CodecSerialNumber
+
+> Description: This the Serial Number of the Primary Codec and helps the Campfire Blueprint Macro determine which codec is in charge of operating the solution
+
+- **Default Value**: ''
+- **Accepted Values**: Codec Serial Number
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.PrimaryCodec.Authentication.Username
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Independent. Provide the Username to the Primary Codec. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.PrimaryCodec.Authentication.Passcode
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Independent. Provide the Passcode to the Primary Codec. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
+
+#### CodecInfo.NodeCodecs[{Array}]
+
+> NOTE: The NodeCodecs Nest contains multiple blocks of similar properties. Below will reference how to setup 1 node codec. This will need to be expanded to 3 times to include all Node Codecs for the Campfire Blueprint, please reference the Code View for full sample syntax
+
+##### CodecInfo.NodeCodecs[{Array}].Label
+
+> Description: Provide a name to help you better define where this Node Codec when reviewing the macro logs
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: No
+- **Value Definitions**:
+  - N/A
+
+##### CodecInfo.NodeCodecs[{Array}].PrimaryCodec_QuadCamera_Id
+
+> Description: This tells the Campfire Blueprint Macro which HDMI Input connector of the Primary Codec this Node Codec's HDMI Output is plugged into. 
+
+- **Default Value**: 2
+- **Accepted Values**: Any non-negative whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**: 
+  - N/A
+
+##### CodecInfo.NodeCodecs[{Array}].CodecSerialNumber
+
+> Description: This the Serial Number of this **Node Codec** and helps the Campfire Blueprint Macro determine how to communicate to the correct node when applicable
+
+- **Default Value**: ''
+- **Accepted Values**: Codec Serial Number
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - N/A
+
+##### CodecInfo.NodeCodecs[{Array}].Authentication.Username
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Independent. Provide the Username to this Node Codec. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
+
+##### CodecInfo.NodeCodecs[{Array}].Authentication.Passcode
+
+> Description: Only accessed when **CodecInfo.Authentication.Mode** is set to Independent. Provide the Passcode to this Node Codec. 
+
+**Warning: Be sure to check with your organization's Security Best Practices before storing any authentication details in this Macro. You may need to alter the macro to adhere to your organization's best practices**
+
+- **Default Value**: ''
+- **Accepted Values**: Any String
+- **DataType**: String
+- **Required**: Dependant on **CodecInfo.Authentication.Mode** Setting
+- **Value Definitions**:
+  - N/A
 
 ### Configuring the AudioMap Object
-> AudioMap allows you to define the AudioZones within your space. These zones teach the Primary Codec how to make use of your microphone data. This Object is the based object necessary to utilize the AZM Library and is unique per space.
+> AudioMap allows you to define the AudioZones within your space. These zones teach the Primary Codec how to make use of your microphone data. This Object defined by the AZM Library Macro.
 
 #### Code View
+```javascript
+const AudioMap = {
+  Settings: {                   // Description: The Settings node effects all audio processing by AZM
+    Sample: {
+      Size: 4,                  // DefaultValue: 4 || AcceptedValue: Integer || Description: Set the sample size for AZM Audio Collection
+      Rate_In_Ms: 500           // DefaultValue: 4 || AcceptedValue: 10-1000 || Description: Set the sample rate for AZM Audio Collection
+    },
+    GlobalThreshold: {
+      Mode: 'On',               // DefaultValue: 'On' || AcceptedValue: <'On', 'Off'> || Description: On: Enable Global Audio Thresholds for All Audio Zones; Off: Enable Independent Audio Thresholds for All Audio Zones
+      High: 25,                 // DefaultValue: 35   || AcceptedValue: 1-60          || Description: Set the High Global Threshold
+      Low: 15                   // DefaultValue: 20   || AcceptedValue: 1-60          || Description: Set the High Global Threshold
+    }
+  },
+  Zones: [                      // Description: The Zones node allows you to define one or more audio zones for the AZM Automation. This is an array.
+    /*
+      Below is an example configuration for a single Ethernet/AES67 Microphone Zone
+    */
+    {
+      Label: 'Example Ethernet Configuration',  // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
+      Independent_Threshold: {
+        High: 35,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
+        Low: 20                                 // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
+      },
+      MicrophoneAssignment: {
+        Type: 'Ethernet',                       // DefaultValue: 'Microphone' || AcceptedValue: <'Microphone' or 'Analog', 'Ethernet' or 'AES67'> || Description: Define the Type of Microphone placed in this Zone
+        Connectors: [                           // Description: Assign one of more connectors to your Zone. This is an Array
+          {
+            Serial: '',                         // DefaultValue: String || AcceptedValue: String || Description: For Cisco Ethernet Microphones Only, assign the Serial address of the Microphone associated to this Zone
+            StreamName: '',                     // DefaultValue: String || AcceptedValue: String || Description: For Ethernet/AES67 Microphones, assign the StreamName associated to the Zone
+            SubId: [2, 3]                       // DefaultValue: Array  || AcceptedValue: [1-8]  || Description: For Ethernet/AES67 Microphones, SubIds to subscribe to. 3rd party microphones may vary
+          }
+        ]
+      },
+      Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
+        CustomAsset_1: 'Define My First Asset', // NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
+        CameraId: 1                             // A more real world example of an Asset
+      }
+    },
+    /*
+      This ends the First Zone, add more Zones using the Same Format as above for Ethernet Microphones
+      ---
+        NOTE: Not recommended to mix Microphone Types as of December 2023
+      ---
+      Below is an example configuration for a single Analog Microphone Zone
+    */
+    {
+      Label: 'Example Analog Configuration',    // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
+      Independent_Threshold: {
+        High: 15,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
+        Low: 9                                  // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
+      },
+      MicrophoneAssignment: {
+        Type: 'Microphone',                     // DefaultValue: 'Microphone' || AcceptedValue: <'Microphone' or 'Analog', 'Ethernet' or 'AES67'> || Description: Define the Type of Microphone placed in this Zone
+        Connectors: [
+          {
+            Id: 1                               // DefaultValue: Integer || AcceptedValue: Integer || Description: For Analog Microphones, assign the ConnectorId associated to the Zone
+          }
+        ]
+      },
+      Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
+        CustomAsset_2: 'Define My Second Asset',// NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
+        PresetId: 30                            // A more real world example of an Asset
+      }
+    }
+  ]
+}
+```
 
-- - -
+#### AudioMap.Settings.Sample.Size
+
+> Description: The Sample Size refers to how many VuMeter samples the AZM Library connects across all microphone connectors before determining the Audio Zone's state
+
+- **Default Value**: 4
+- **Accepted Values**: Any non-negative, non-zero, whole integer
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: This value effects the performance and speed of the Audio Zone Status
+
+#### AudioMap.Settings.Sample.Rate
+
+> Description: The Sample Rate refers to how often a VuMeter sampled by the AZM is collected in milliseconds across all microphone connectors
+
+- **Default Value**: 500
+- **Accepted Values**: 10 to 1000
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: This value effects the performance and speed of the Audio Zone Status
+
+#### AudioMap.Settings.GlobalThreshold.Mode
+
+> Description: Choose how you want audio thresholds handled in your space
+
+- **Default Value**: 'On'
+- **Accepted Values**: ['On', 'Off']
+- **DataType**: String
+- **Required**: Yes
+- **Value Definitions**:
+  - On: Applies the **AudioMap.Settings.GlobalThreshold.High/Low** values across all microphone connectors
+
+#### AudioMap.Settings.GlobalThreshold.High
+
+> Description: The High threshold defined for all microphone connectors. Any Audio Zone that is greater than or equal too this value will transition to a _High_ state
+
+- **Default Value**: 25
+- **Accepted Values**: 1 to 60
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: The High threshold should have a value greater than the Low threshold
+
+#### AudioMap.Settings.GlobalThreshold.Low
+
+> Description: The High threshold defined for all microphone connectors. Any Audio Zone that is lesser than or equal too this value will transition to a _Low_ state
+
+- **Default Value**: 15
+- **Accepted Values**: 1 to 60
+- **DataType**: Integer
+- **Required**: Yes
+- **Value Definitions**:
+  - NOTE: The Low threshold should have a value lesser than the High threshold
+
+#### AudioMap.Zones[{Array}]
+
+> NOTE: The Zones Nest contains multiple blocks of similar properties. Below will cover all nested properties, but not all values belong to each connector type. You will need 4 Zones total for the Campfire Blueprint.
+
+**Warning: It's best practice _NOT to mix Analog and Ethernet Microphones_ due to latency between the to microphone types. Please choose 1 microphone typw for your room design, follow the format for that microphone type listed below.**
+
+##### AudioMap.Zones[{Array}].Label
 
 > Description: 
 
@@ -355,3 +688,82 @@ const Settings = {
 - **Required**: 
 - **Value Definitions**:
   - 
+
+##### AudioMap.Zones[{Array}].Independent_Threshold.High
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].Independent_Threshold.Low
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].Serial
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].StreamName
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].SubId
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].Id
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+##### AudioMap.Zones[{Array}].Assets.CameraConnectorId
+
+> Description: 
+
+- **Default Value**: 
+- **Accepted Values**: 
+- **DataType**: 
+- **Required**: 
+- **Value Definitions**:
+  - 
+
+- - -

@@ -71,7 +71,7 @@ const CodecInfo = {
     Common_Passcode: ''                       // DefaultValue: String || AcceptedValues: String || Description: The passcode shared across all node codecs. Only accessed when the Mode is set to Common
   },
   PrimaryCodec: {
-    Label: 'North [A1]',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
+    Label: 'North',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
     PrimaryCodec_QuadCamera_Id: '1',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
     CodecSerialNumber: '0000000000',          // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Primary Codec
     Authentication: {
@@ -81,7 +81,7 @@ const CodecInfo = {
   },
   NodeCodecs: [
     {
-      Label: 'East [A2]',                     // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
+      Label: 'East',                     // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
       PrimaryCodec_QuadCamera_Id: '2',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
       CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
       IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
@@ -92,14 +92,14 @@ const CodecInfo = {
     },
     // For the remaining Node Codecs, follow the same format as above
     {
-      Label: 'South [A3]',                            
+      Label: 'South',                            
       PrimaryCodec_QuadCamera_Id: '3',         
       CodecSerialNumber: '0000000000',         
       IpAddress: '10.X.X.X',                  
       Authentication: { Username: 'admin', Passcode: '' }
     },
     {
-      Label: 'West [A4]',
+      Label: 'West',
       PrimaryCodec_QuadCamera_Id: '4',
       CodecSerialNumber: '0000000000',
       IpAddress: '10.X.X.X',
@@ -121,54 +121,25 @@ const AudioMap = {
     }
   },
   Zones: [                      // Description: The Zones node allows you to define one or more audio zones for the AZM Automation. This is an array.
-    /*
-      Below is an example configuration for a single Ethernet/AES67 Microphone Zone
-    */
     {
-      Label: 'Example Ethernet Configuration',  // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
+      Label: 'Audio Zone 1',                    // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
       Independent_Threshold: {
         High: 35,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
         Low: 20                                 // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
       },
       MicrophoneAssignment: {
-        Type: 'Ethernet',                       // DefaultValue: 'Microphone' || AcceptedValue: <'Microphone' or 'Analog', 'Ethernet' or 'AES67'> || Description: Define the Type of Microphone placed in this Zone
+        Type: '',                               // DefaultValue: String || AcceptedValue: <'Microphone' or 'Analog', 'Ethernet' or 'AES67'> || Description: Define the Type of Microphone placed in this Zone
         Connectors: [                           // Description: Assign one of more connectors to your Zone. This is an Array
           {
             Serial: '',                         // DefaultValue: String || AcceptedValue: String || Description: For Cisco Ethernet Microphones Only, assign the Serial address of the Microphone associated to this Zone
             StreamName: '',                     // DefaultValue: String || AcceptedValue: String || Description: For Ethernet/AES67 Microphones, assign the StreamName associated to the Zone
-            SubId: [2, 3]                       // DefaultValue: Array  || AcceptedValue: [1-8]  || Description: For Ethernet/AES67 Microphones, SubIds to subscribe to. 3rd party microphones may vary
-          }
-        ]
-      },
-      Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
-        CustomAsset_1: 'Define My First Asset', // NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
-        CameraId: 1                             // A more real world example of an Asset
-      }
-    },
-    /*
-      This ends the First Zone, add more Zones using the Same Format as above for Ethernet Microphones
-      ---
-        NOTE: Not recommended to mix Microphone Types as of December 2023
-      ---
-      Below is an example configuration for a single Analog Microphone Zone
-    */
-    {
-      Label: 'Example Analog Configuration',    // DefaultValue: 'Zone_N' || AcceptedValue: String || Description: Provide a label for your Audio Zone
-      Independent_Threshold: {
-        High: 15,                               // DefaultValue: 35 || AcceptedValue: 1-60 || Description: Set the High Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
-        Low: 9                                  // DefaultValue: 20 || AcceptedValue: 1-60 || Description: Set the Low Independent Threshold. Settings > Global > Threshold > Mode must be set to Off to access
-      },
-      MicrophoneAssignment: {
-        Type: 'Microphone',                     // DefaultValue: 'Microphone' || AcceptedValue: <'Microphone' or 'Analog', 'Ethernet' or 'AES67'> || Description: Define the Type of Microphone placed in this Zone
-        Connectors: [
-          {
+            SubId: [2, 3],                      // DefaultValue: Array  || AcceptedValue: [1-8]  || Description: For Ethernet/AES67 Microphones, SubIds to subscribe to. 3rd party microphones may vary
             Id: 1                               // DefaultValue: Integer || AcceptedValue: Integer || Description: For Analog Microphones, assign the ConnectorId associated to the Zone
           }
         ]
       },
       Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
-        CustomAsset_2: 'Define My Second Asset',// NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
-        PresetId: 30                            // A more real world example of an Asset
+        CameraConnectorId: 1                    // 
       }
     }
   ]
