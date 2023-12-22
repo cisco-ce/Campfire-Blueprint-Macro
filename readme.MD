@@ -12,20 +12,20 @@
 
 ## Table of Contents
 
-- [Campfire Best Practices](#campfire-best-practices)
-- [Key Terminology](#key-terminology)
-- [Device Requirements](#device-requirements)
-- [Support Information](#support-information)
-- [User Guide](#user-guide)
-- [Macro Installation](#macro-installation)
-- [Configuration](#configuration)
-  - [Settings](#settings)
-  - [CodecInfo](#codecinfo)
-  - [AudioMap](#audiomap)
-- [3rd Party Hardware Integration](#3rd-party-hardware-integration)
-- [FAQ](#faq)
+- [Campfire Best Practices](#campfire-best-practices-)
+- [Key Terminology](#key-terminology-)
+- [Device Requirements](#device-requirements-)
+- [Support Information](#support-information-)
+- [User Guide](#user-guide-)
+- [Macro Installation](#macro-installation-)
+- [Configuration](#configuration-)
+  - [Settings](#settings-)
+  - [CodecInfo](#codecinfo-)
+  - [AudioMap](#audiomap-)
+- [3rd Party Hardware Integration](#3rd-party-hardware-integration-)
+- [FAQ](#faq-)
 
-> Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#)
+> Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 - - -
 
@@ -772,6 +772,6 @@ const AudioMap = {
 
 - - -
 
-## 3rd Party Hardware Integration
+## 3rd Party Hardware Integration [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
-## FAQ
+## FAQ [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
