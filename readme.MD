@@ -11,11 +11,12 @@
 - - -
 
 ## Table of Contents (TOC)
-- [Campfire Best Practices](#)
+
+- [Campfire Best Practices](#campfire-best-practices)
 - [Key Terminology](#)
 - [Device Requirements](#)
 - [Support Information](#)
-- [User Guide](#)
+- [User Guide](#user-guide)
 - [Macro Installation](#)
 - [Configuration](#)
   - [Settings](#)
@@ -24,9 +25,12 @@
 - [3rd Party Hardware Integration](#)
 - [FAQ](#)
 
+> Press on the Menu Icon to come back to the Table of Contents <img src="/images/view-list-circle_100_w.png" alt="drawing" width="50"/>
+
 - - -
 
 ## Campfire Best Practices
+- ToDo
 
 ## Key Terminology
 
