@@ -30,7 +30,7 @@ or implied.
 */
 
 import xapi from 'xapi';
-import { GMM } from './GMM_Lib';
+import { GMM } from './GMM_Lite_Lib';
 
 
 let PrimaryInfo = '';

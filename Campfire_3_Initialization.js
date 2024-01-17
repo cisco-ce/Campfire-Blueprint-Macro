@@ -96,7 +96,6 @@ Validate.Macros = async function (version = DevConfig.Version) {
     [`Campfire_1_Main`]: false,
     [`Campfire_2_Config`]: false,
     [`Campfire_3_Initialization`]: false,
-    [`Campfire_Node`]: false,
     "GMM_Lite_Lib": false,
     "AZM_Lib": false
   }
