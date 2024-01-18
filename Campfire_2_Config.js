@@ -45,7 +45,7 @@ const Settings = {
           }
         },
         Mode: {
-          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Conversation', 'Spotlight', 'Quad'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
+          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Everyone', 'Conversation'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
           Speaker: {
             TransitionTimeout: {
               OnJoin: 2500                  // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
@@ -53,8 +53,8 @@ const Settings = {
           },
           Conversation: {
             TransitionTimeout: {
-              OnJoin: 20000,                // DefaultValue: 5000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
-              Continue: 15000               // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
+              OnJoin: 20000,                // DefaultValue: 20000 || AcceptedValues: Integer in Milliseconds || Description: Define how long a camera remains in the composition when it first joins the conversation
+              Continue: 15000               // DefaultValue: 15000 || AcceptedValues: Integer in Milliseconds || Description: Define often the camera will continue being composed if the conversation is still active
             }
           }
         }
