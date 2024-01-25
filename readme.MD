@@ -8,29 +8,28 @@
 
 ## About
 
+- 
+
 - - -
 
 ## Table of Contents
 
-- [Campfire Best Practices](#campfire-best-practices-)
 - [Key Terminology](#key-terminology-)
-- [Device Requirements](#device-requirements-)
+- [Room Dimensions](#campfire-best-practices-)
 - [Support Information](#support-information-)
 - [User Guide](#user-guide-)
+- [Device Requirements](#device-requirements-)
+- [Device Connectivity Drawings](#device-connectivity-drawings-)
 - [Macro Installation](#macro-installation-)
 - [Configuration](#configuration-)
   - [Settings](#settings-)
   - [CodecInfo](#codecinfo-)
   - [AudioMap](#audiomap-)
-- [3rd Party Hardware Integration](#3rd-party-hardware-integration-)
 - [FAQ](#faq-)
 
 > Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 - - -
-
-## Campfire Best Practices [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
-- ToDo
 
 ## Key Terminology [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
@@ -42,30 +41,9 @@
 | Node/Node Codec | References the codec(s) in the room design that report to the primary and functions as a modified peripheral for the Primary Codec. |
 | Audio Zone | A concept that defines a region of audio we use to assign microphone too. Each Audio Zone must be defined and mapped to a camera resource in order to enable the solution |                                                                              |
 
-## Device Requirements [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+## Room Dimensions [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
-### Minimum RoomOS Software Version
-- RoomOS 11.8.X
-
-### Registration Compatibility
-
-| Webex Cloud | Webex Edge (Hybrid Cloud) | On-Premise | Microsoft Teams Room<br>On Cisco Devices |
-|:------------|:--------------------------|:-----------|:-----------------------------------------|
-| ✅         | ✅                       | ✅        | ❌ - API Limitation<br>(December 2023)      |
-
-### Device Role Compatibility
-
-| **Device**     | **Primary** | **Node** |
-|----------------|-------------|----------|
-| **Codec Pro**  | ✅           | ✅        |
-| **Codec EQ**   | ❌           | ✅        |
-| **Codec Plus** | ❌           | ✅        |
-
-### Recommended Hardware
-
-| **Primary Codec** | **Node Codec** | **Node QTY** | **Microphone**       | **MIC QTY** |
-|-------------------|----------------|--------------|----------------------|-------------|
-| Codec Pro         | Codec EQ       | 3            | Table Microphone Pro | 8           |
+- [TODO](#)
 
 ## Support Information [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 - All Macros are considered **Custom Code**. Any and all pieces Custom Code are **NOT** supported by Cisco. The base Hardware, Software and Device xAPI are covered by the product.
@@ -104,6 +82,37 @@
 [![Campfire Touch Panel Mute Prompt](/images/campfire_mutenotice.png)](#)
 
 - - - 
+
+## Device Requirements [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+
+### Minimum RoomOS Software Version
+- RoomOS 11.8.X
+
+### Registration Compatibility
+
+| Webex Cloud | Webex Edge (Hybrid Cloud) | On-Premise | Microsoft Teams Room<br>On Cisco Devices |
+|:------------|:--------------------------|:-----------|:-----------------------------------------|
+| ✅         | ✅                       | ✅        | ❌ - API Limitation<br>(December 2023)      |
+
+### Device Role Compatibility
+
+| **Device**     | **Primary** | **Node** |
+|----------------|-------------|----------|
+| **Codec Pro**  | ✅           | ✅        |
+| **Codec EQ**   | ❌           | ✅        |
+| **Codec Plus** | ❌           | ✅        |
+
+### Recommended Hardware
+
+| **Primary Codec** | **Node Codec** | **Node QTY** | **Microphone**       | **MIC QTY** |
+|-------------------|----------------|--------------|----------------------|-------------|
+| Codec Pro         | Codec EQ       | 3            | Table Microphone Pro | 8           |
+
+
+## Device Connectivity Drawings [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+
+- [TODO](#)
+
 ## Macro Installation [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
 NOTE: Macro Installation requires several steps, and is best handled in the order outlined below.
@@ -772,6 +781,28 @@ const AudioMap = {
 
 - - -
 
-## 3rd Party Hardware Integration [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
-
 ## FAQ [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+
+### Is Campfire supported by Cisco Technical Assistance Center (TAC)?
+- No, Cisco TAC will not support the Campfire Solution as it's considered customer code
+- TAC will support the RoomOS Software and your Codec Hardware for it's normal operation, such as Speakertrack.
+- You will need to engage your AV Partner for support, but the code is open for anyone to troubleshoot
+
+### Will Campfire work on a Codec Pro running as a Microsoft Teams Room (MTR)?
+- As of January 2024, no, there is an API limitation in the Macro Code. This API limitation stops the campfire solution from operating.
+
+### Can I use the Room Bar or the Room Bar Pro as the camera, instead of a Codec with a Quadcamera
+- The Campfire blueprint in it's current state, is outlined to use all Quadcameras
+- If your space is uniquely different, the Room Bar/RoomBar Pro can be used, but the Macros will need to be altered to suit that build.
+  - Not impossible, but may need a little extra TLC to get going
+
+### Can I add a PTZ Camera?
+- Yes and No
+  - Yes, as you have an extra HD-SDI input available to add a Camera
+  - No, as the camera switching in the Macro is on all the time, so you'll need to edit the Macro to include a PTZ in your solution
+
+### How can I get help?
+- Review the Guides above, there is alot of detail that can help :smiley:
+- You can join the Community Supported Space on Webex
+  - https://eurl.io/#nJWdM3w_T
+  - NOTE: This is a community supported space, should you need hands on assistance, please engage either your Cisco Sales Engineer and/or Cisco Technical Solutions Engineer or an AV Vendor Partner

@@ -46,10 +46,12 @@ const init = {
     await GMM.memoryInit()
 
     setInterval(function () {
-      console.debug({ Campfire_Node_Debug: 'Infinite DND Re-Activated' })
+      console.debug({ Campfire_Node_Debug: 'DND Re-Activated' })
       xapi.Command.Conference.DoNotDisturb.Activate({ Timeout: 1440 }).catch(e => { processError(e, 'Failed DND Activation') });
-    }, 1440)
+    }, 1440 * 1000 * 60)
+
     await configureNode()
+
     try {
       PrimaryInfo = await GMM.read('PrimaryInfo')
       let info = atob(PrimaryInfo)
@@ -81,8 +83,12 @@ const init = {
       }
       await GMM.write('mutedOverviewPTZPosition', mutedOverviewPTZPosition)
     }
+
+    await init.Phase2();
   },
   Phase2: async function () {
+
+    await startupCommands()
 
     console.info({ Campfire_Node_Info: 'Initializing Campfire Node...' });
   }
@@ -106,23 +112,40 @@ async function saveMutedPTZ(ptz) {
 
 async function configureNode() {
   console.info({ Campfire_Node_Info: `Configuring Campfire Node...` })
-  await xapi.Command.Conference.DoNotDisturb.Activate({ Timeout: 1440 }).catch(e => { processError(e, 'Failed DND Activation') });
-  console.info({ "Campfire_Node_Info": "Infinite DND Activated" });
-  await xapi.Config.Standby.Control.set('Off').catch(e => { processError(e, 'Failed Setting Standby Mode Config') });
-  await xapi.Config.Audio.Input.ARC[1].Mode.set('Off').catch(e => { processError(e, 'Failed Setting Arc Config') });
-  await xapi.Config.UserInterface.OSD.Mode.set('Unobstructed').catch(e => { processError(e, 'Failed Setting OSD Mode Config') });
-  await xapi.Config.Peripherals.Profile.TouchPanels.set(0).catch(e => { processError(e, 'Failed Setting Profile TouchPanels Config') });
+
+  await xapi.Config.Audio.Output.ARC[1].Mode.set('Off').catch(e => { processError(e, 'Failed Setting Arc Config') });
   await xapi.Config.Audio.Output.InternalSpeaker.Mode.set('Off').catch(e => { processError(e, 'Failed Setting InternalSpeaker Config') });
-  await xapi.Config.Standby.Halfwake.Mode.set('Manual').catch(e => { processError(e, 'Failed Setting Halfwake Mode Config') });
+
+  await xapi.Config.Peripherals.Profile.TouchPanels.set(0).catch(e => { processError(e, 'Failed Setting Profile TouchPanels Config') });
+
   await xapi.Config.RoomAnalytics.PeopleCountOutOfCall.set('On');
+
+  await xapi.Config.Standby.Control.set('Off').catch(e => { processError(e, 'Failed Setting Standby Mode Config') });
+  await xapi.Config.Standby.Halfwake.Mode.set('Manual').catch(e => { processError(e, 'Failed Setting Halfwake Mode Config') });
+
+  await xapi.Config.UserInterface.OSD.Mode.set('Unobstructed').catch(e => { processError(e, 'Failed Setting OSD Mode Config') });
+
+  await xapi.Config.Video.Selfview.Default.Mode.set('On');
+  await xapi.Config.Video.Selfview.Default.FullscreenMode.set('On');
+
   console.info({ Campfire_Node_Info: `Configuring Campfire Node Configuration Complete!` })
 }
 
+async function startupCommands() {
+  await xapi.Command.Conference.DoNotDisturb.Activate({ Timeout: 1440 }).catch(e => { processError(e, 'Failed DND Activation') });
+  console.info({ "Campfire_Node_Info": "DND Activated" });
+  await xapi.Command.Video.Selfview.Set({ FullscreenMode: 'On', Mode: 'On', OnMonitorRole: 'First' });
+  console.info({ "Campfire_Node_Info": "Selview Activated" });
+}
+
 function processError(err, context) {
+  if (context != undefined) { err.Context = context; };
 
-  err['Context'] = context
-
-  console.warn({ Campfire_Node_Warn: err })
+  if (err.message != 'Invalid or missing Path argument') {
+    console.warn({ Campfire_Node_Warn: err });
+    return;
+  }
+  console.debug({ Campfire_Node_Debug: `Error Ignored as it doesn't apply to this product`, Error: err.message, Context: err.Context })
 }
 
 async function runCameraMode(mode) {
@@ -210,6 +233,15 @@ xapi.Status.RoomAnalytics.PeopleCount.Current.on(async event => {
     peopleCountCurrent = 0
   }
   await SendToPrimary('PeopleCountUpdate', peopleCountCurrent)
+})
+
+xapi.Status.Video.Selfview.on(event => {
+  if (event?.Mode == 'Off' || event?.FullscreenMode == 'Off') {
+    console.log({ Campfire_Node_Log: `Selfview altered, re-applying selfview...` })
+    setTimeout(() => {
+      xapi.Command.Video.Selfview.Set({ FullscreenMode: 'On', Mode: 'On', OnMonitorRole: 'First' });
+    }, 2000)
+  }
 })
 
 async function updateNodeLabel(data, primarySerial) {
