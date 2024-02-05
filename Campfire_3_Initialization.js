@@ -12,12 +12,20 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 *********************************************************x
 
+ * Author(s):               Robert(Bobby) McGonigle Jr
+ *                          Technical Marketing Engineering, Technical Leader
+ *                          Cisco Systems
+ * 
  * Consulting Engineer(s)   Gerardo Chaves                    William Mills
  *                          Leader, Systems Engineering       Technical Solutions Specialist
  *                          Cisco Systems                     Cisco Systems
  * 
  *                          Tore Bjolseth                     Tobias Brodtkorb
  *                          Engineering Technical Leader      Technical Marketing Engineering, Technical Leader
+ *                          Cisco Systems                     Cisco Systems
+ * 
+ * UX Consult(s)            Kristian Tangeland                Jens Petter Lie
+ *                          Principal Designer                Director, Product Management
  *                          Cisco Systems                     Cisco Systems
  * 
  * Started: November 20, 2023

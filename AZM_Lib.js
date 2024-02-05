@@ -20,10 +20,6 @@ or implied.
  *                          Leader, Systems Engineering       Technical Solutions Specialist
  *                          Cisco Systems                     Cisco Systems
  * 
- *                          Tore Bjolseth                     Tobias Brodtkorb
- *                          Engineering Technical Leader      Technical Marketing Engineering, Technical Leader
- *                          Cisco Systems                     Cisco Systems
- * 
  * Released: November 20, 2023
  * Updated: December 22, 2023
  * 
