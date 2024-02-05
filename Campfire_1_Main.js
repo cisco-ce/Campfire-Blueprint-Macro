@@ -1,5 +1,5 @@
 /********************************************************
-Copyright (c) 2023 Cisco and/or its affiliates.
+Copyright (c) 2024 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.1 (the "License"). You may obtain a copy of the
 License at
@@ -20,17 +20,8 @@ or implied.
  *                          Engineering Technical Leader      Technical Marketing Engineering, Technical Leader
  *                          Cisco Systems                     Cisco Systems
  * 
- ********************************************************
- * 
- * THIS IS AN EARLY BUILD, PLEASE DO NOT REDISTRIBUTE
- * 
- ********************************************************
- * 
- * Description:
- *   - 
- * 
  * Started: November 20, 2023
- * Updated: Dec 19, 2023
+ * Updated: January 18, 2024
 */
 
 /********************************

@@ -23,11 +23,9 @@ or implied.
  *                          Cisco Systems
  * 
  * Released: May 16, 2022
- * Updated: Dec 8, 2023
+ * Updated: January 18, 2024
  * 
  * Version: 1.9.8 LITE
- * 
- * GMM.Config.adjustHTTPClientTimeout
 */
 
 import xapi from 'xapi';

@@ -25,8 +25,7 @@ or implied.
  *                          Cisco Systems                     Cisco Systems
  * 
  * Released: November 20, 2023
- * Updated: December 8, 2023
- * Version: 0.7.2
+ * Updated: December 22, 2023
  * 
  * Description:
  *   - Audio Zone Manager (AZM)
