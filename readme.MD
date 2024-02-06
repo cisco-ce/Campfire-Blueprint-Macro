@@ -8,7 +8,11 @@
 
 ## About
 
-- 
+Campfire is a Room Design Concept that tackles the challenge of a 360 conference room. It's not a formal product of Cisco, but is a solution put together that takes advantage of native features or the product and uses the devices xAPI to build out a new solution.
+
+The challenge that needed solving was to enable speaker tracking in all side of a space coupled with the fact that a Cisco Codec were built to support 1 speakertracking camera. By leveraging additional codecs in a room design to drive more instances of speakertrack and using the device's xAPI we can coordinate all 4 systems to operate as one and provide a solution to this challenge.
+
+![What is Campfire Slide](/images/what-is-campfire.png)
 
 - - -
 
@@ -43,12 +47,38 @@
 
 ## Room Dimensions [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
-- [TODO](#)
+- The room should not measure less than 9x9m (30x30’). This will allow for enough space for users to move comfortably around the campfire setup. 
+- The provided measurements for the campfire setup has carefully been considered to provide an optimal in-room and far-end experience.
+- The mounting height of the cameras, their relative position to the screens and distance to the position where the local participants are seated, ensure good eye contact both in-room and for remote attendees. 
+- The fixed distance between the screens and the edge of the table secures a free line of sight from the local participants to the video participants and shared digital content. 
+
+[![Room Dimensions](/images/campfire-room-dimensions.png)](#)
+
+- Segmented table to avoid participants sitting in the blind spots of the cameras
+- Segmented tables also offers ease of access for maintenance and cleaning at the center
+- Custom design table with the courtesy panels are integrated into the shape*
+- Table shape is custom to optimize on footprint and experience
+- Make sure the technical equipment in the center island have sufficient ventilation and cooling
+
+[![Furniture TopView](/images/campfire-furniture-topview.png)](#)
+
+- Note the privacy panels in the front of each table. Whereas the Quadcamera is mounted in a format outside it's normal deployment, the camera will have visibility under each table. So it's important to source tables with a privacy panel in the front or at least a table cloth.
+
+[![Furniture SideView](/images/campfire-furniture-sideview.png)](#)
+
+- Cisco table shape reference for ideal user experience
+- Courtesy panels is recommended in the setup integration
+- Final implementation to be done with furniture partner of choice
+
+[![Table Dimensions](/images/campfire-furniture-table-dimensions.png)](#)
 
 ## Support Information [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
-- All Macros are considered **Custom Code**. Any and all pieces Custom Code are **NOT** supported by Cisco. The base Hardware, Software and Device xAPI are covered by the product.
+- All Macros are considered **Custom Code**. Any and all pieces of Custom Code are **NOT** supported by Cisco. The base Hardware, Software and Device xAPI are covered by the product.
 - If you're considering deploying the Campfire Blueprint Macros we recommend you engage a Cisco Vendor Partner, not only for installation, but for configuration and ongoing support.
 - The Campfire Blueprint Macros are provided as is, please reference the code license.
+- You can join a Community Supported Space on Webex
+  - https://eurl.io/#nJWdM3w_T
+  - NOTE: This is a community supported space. There is no guarantee of assistance in this space, it's a space filled with community members who may or may not answer questions or provide feedback; all is best effort. Should you need hands on assistance, please engage either your Cisco Sales Engineer and/or Cisco Technical Solutions Engineer or an AV Vendor Partner.
 
 ## User Guide [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
@@ -111,7 +141,76 @@
 
 ## Device Connectivity Drawings [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
-- [TODO](#)
+### Solution Components
+
+#### Recommended Components
+
+| Recommended Cisco Hardware | QTY | 3rd Party Components                        | QTY |
+|----------------------------|-----|---------------------------------------------|-----|
+| Codec Pro (Primary Codec)  | x1  | 50" Display                                 | x8  |
+| Codec EQ (Node Codec)      | x3  | HDMI Distribution Amplifier (HDMI Splitter) | x2  |
+| Quadcamera                 | x4  | POE Switch (16 Port Minimum)                | x1  |
+| Table Microphone Pro       | x8  | Custom Furniture                            | x1  |
+| Room Navigator             | x1  | Installation and Configuration              | x1  |
+
+**NOTE**: HDMI DAs/Splitters can break CEC Communication, it's recommended to source a HDMI DA that can address this break in comunication to the displays in order to power them on and off as the codec pro changes Standby State
+
+#### Node Codec Alternatives
+- Codec Pro
+- Codec Plus
+
+#### Microphone Alternatives
+- AES67 Microphones
+- Directional Analog Microphones
+
+### Video Output Connections
+
+- Video Output Connectors 1 and 2 from the Codec Pro are fed into the Partner sourced HDMI Distribution Amplifier
+- The new Outputs from Each DA are distributed to all 8 displays so that each side of the campfire has a duplicate output feed for both output 1 and 2 of the Codec Pro
+
+[![Video Output Connections](/images/campfire_connections_videoOut.png)](#)
+
+### Video Input Connections
+
+- HDMI Input 1 on the Codec Pro connects to the Primary Codec's own Quadcamera
+- HDMI Inputs 2-4 on the Codec Pro take in the HDMI Output signal of the Codec EQ's HDMI Output 1
+  - Each Node Quadcamera's Video Output signal is feed into their respective Node Codec EQ HDMI Input 1
+
+[![Video Input Connections](/images/campfire_connections_videoIn.png)](#)
+
+### Network Connections
+
+- All 4 Codecs should connect to the customer Lan for Management and Updates
+- Primary Codec Pro
+  - Connect the Ethernet Control line of the Primary Codec Pro's Quadcamera to the first Link Local Port of the Primary Codec Pro
+  - Connect the POE switch to the second Link Local Port of the Primary Codec Pro
+    - Connect all 8 Table Microphone Pros to the POE Switch
+    - You may connect additional Table Navigators and/or PTZ Camera Control lines to this switch if modifying the solution design
+  - Connect the Room Navigator to the fourth Link Local Port of the Primary Codec Pro
+    - You may also connect this to the POE switch for simplicity
+- Node Codec EQ
+  - For each Node Codec EQ, Connect the Ethernet Control line of the Node Codec EQ's Quadcamera to the first Link Local Port of the respective Node Codec EQ
+
+[![Network Connections](/images/campfire_connections_network.png)](#)
+
+### Audio Output Connections
+
+- The Primary Quadcamera will receive audio over ARC
+- All other Quadcameras must have a Euroblock to TRS 3.5mm connection
+  - All Audio passes though the Primary Codec Pro, do not connect any Audio via the Node Codecs
+
+[![Audio Output Connections](/images/campfire_connections_audioOut.png)](#)
+
+### Audio Input Connections
+
+- For Ethernet Audio Connections (Both AES67 and Cisco Ethernet Mic), connect these to the POE Switch
+
+[![Ethernet Audio Input Connections](/images/campfire_connections_ethernetAudioIn.png)](#)
+
+- For Analog Audio Connections, connect each microphone to the Microphone 4pin Euroblock connectors on the back of the Primary Codec Pro
+- If you plan on using a DSP for Audio Expansion, it would be good to break out 8 Analog Audio Lines and feed them into the codec, as each input at this point could serve as a unique audio zone
+
+[![Analog Audio Input Connections](/images/campfire_connections_analogAudioIn.png)](#)
 
 ## Macro Installation [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
@@ -687,97 +786,97 @@ const AudioMap = {
 
 #### AudioMap.Zones[{Array}]
 
-> NOTE: The Zones Nest contains multiple blocks of similar properties. Below will cover all nested properties, but not all values belong to each connector type. You will need 4 Zones total for the Campfire Blueprint.
+> NOTE: The Zones nested values contains multiple blocks of similar properties. Below will cover all nested properties, but not all values belong to each connector type. You will need 4 Zones total for the Campfire Blueprint.
 
 **Warning: It's best practice _NOT to mix Analog and Ethernet Microphones_ due to latency between the to microphone types. Please choose 1 microphone typw for your room design, follow the format for that microphone type listed below.**
 
 ##### AudioMap.Zones[{Array}].Label
 
-> Description: 
+> Description: A label you can assign to the zone. This is used to identify zones in your space. 
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: 'Zone_N'
+- **Accepted Values**: String
+- **DataType**: String
+- **Required**: No
 - **Value Definitions**:
-  - 
+  - N/A
 
 ##### AudioMap.Zones[{Array}].Independent_Threshold.High
 
-> Description: 
+> Description: The High threshold defined for the Zone it's defined within. Any Audio Zone that is greater than or equal too this value will transition to a _High_ state
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: 35
+- **Accepted Values**: 1-60
+- **DataType**: Integer
+- **Required**: No
 - **Value Definitions**:
-  - 
+  - NOTE: The High threshold should have a value greater than the Low threshold
 
 ##### AudioMap.Zones[{Array}].Independent_Threshold.Low
 
-> Description: 
+> Description:  The Low threshold defined for the Zone it's defined within. Any Audio Zone that is greater than or equal too this value will transition to a _Low_ state
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: 20
+- **Accepted Values**: 1-60
+- **DataType**: Integer
+- **Required**: No
 - **Value Definitions**:
-  - 
+  - NOTE: The Low threshold should have a value lesser than the High threshold
 
 ##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].Serial
 
-> Description: 
+> Description: For Cisco Ethernet Microphones Only, assign the microphone's Serial address of the Microphone associated to this Zone. This tells the Macro how to find the Connector ID and map the correct audio information to your Zone
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: ''
+- **Accepted Values**: String
+- **DataType**: String
+- **Required**: Only if using Cisco Ethernet Microphones
 - **Value Definitions**:
-  - 
+  - N/A
 
 ##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].StreamName
 
-> Description: 
+> Description: For AES67 Microphones Only, assign the microphone's StreamName of the Microphone associated to this Zone.This tells the Macro how to find the Connector ID and map the correct audio information to your Zone
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: ''
+- **Accepted Values**: String
+- **DataType**: String
+- **Required**: Only if using AES67 Ethernet Microphones
 - **Value Definitions**:
-  - 
+  - N/A
 
 ##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].SubId
 
-> Description: 
+> Description: For Ethernet based Microphones, these are the SubIds (or media channels) to subscribe to. 3rd party microphones may vary in # of streams
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: []
+- **Accepted Values**: [1-8] (Microphone Dependant)
+- **DataType**: Integer Array
+- **Required**: Only if using Ethernet based Microphones
 - **Value Definitions**:
-  - 
+  - NOTE: Not all microphones have multiple SubIds. Many may mix the stream and output 1 channel
 
 ##### AudioMap.Zones[{Array}].MicrophoneAssignment.Connectors[{SubArray}].Id
 
-> Description: 
+> Description: For Analog Microphones, assign the ConnectorId associated to the Zone. This is the physical connector id on the found on the codec body.
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: 1
+- **Accepted Values**: 1-N
+- **DataType**: Integer
+- **Required**: Only if using Analog Microphones
 - **Value Definitions**:
-  - 
+  - NOTE: Recommended to use Direction Analog Microphones
 
-##### AudioMap.Zones[{Array}].Assets.CameraConnectorId
+##### AudioMap.Zones[{Array}].Assets
 
-> Description: 
+> Description: Assign unique objects under Assets to be assigned to this zone. This could contain any nest object for your design
 
-- **Default Value**: 
-- **Accepted Values**: 
-- **DataType**: 
-- **Required**: 
+- **Default Value**: {}
+- **Accepted Values**: JSON Object Literal
+- **DataType**: JSON Object Literal
+- **Required**: No
 - **Value Definitions**:
-  - 
+  - NOTE: Assets may change from project to project
 
 - - -
 
@@ -803,6 +902,6 @@ const AudioMap = {
 
 ### How can I get help?
 - Review the Guides above, there is alot of detail that can help :smiley:
-- You can join the Community Supported Space on Webex
+- You can join a Community Supported Space on Webex
   - https://eurl.io/#nJWdM3w_T
-  - NOTE: This is a community supported space, should you need hands on assistance, please engage either your Cisco Sales Engineer and/or Cisco Technical Solutions Engineer or an AV Vendor Partner
+  - NOTE: This is a community supported space. There is no guarantee of assistance in this space, it's a space filled with community members who may or may not answer questions or provide feedback; all is best effort. Should you need hands on assistance, please engage either your Cisco Sales Engineer and/or Cisco Technical Solutions Engineer or an AV Vendor Partner.
