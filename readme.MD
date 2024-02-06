@@ -19,10 +19,10 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 ## Table of Contents
 
 - [Key Terminology](#key-terminology-)
-- [Room Dimensions](#campfire-best-practices-)
 - [Support Information](#support-information-)
 - [User Guide](#user-guide-)
 - [Device Requirements](#device-requirements-)
+- [Room Dimensions](#campfire-best-practices-)
 - [Device Connectivity Drawings](#device-connectivity-drawings-)
 - [Macro Installation](#macro-installation-)
 - [Configuration](#configuration-)
@@ -44,33 +44,6 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 | Primary/Primary Codec | References the codec in the room design that is the main device for video conferencing and hosts the bulk of the responsibility for the overall campfire solution. |
 | Node/Node Codec | References the codec(s) in the room design that report to the primary and functions as a modified peripheral for the Primary Codec. |
 | Audio Zone | A concept that defines a region of audio we use to assign microphone too. Each Audio Zone must be defined and mapped to a camera resource in order to enable the solution |                                                                              |
-
-## Room Dimensions [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
-
-- The room should not measure less than 9x9m (30x30’). This will allow for enough space for users to move comfortably around the campfire setup. 
-- The provided measurements for the campfire setup has carefully been considered to provide an optimal in-room and far-end experience.
-- The mounting height of the cameras, their relative position to the screens and distance to the position where the local participants are seated, ensure good eye contact both in-room and for remote attendees. 
-- The fixed distance between the screens and the edge of the table secures a free line of sight from the local participants to the video participants and shared digital content. 
-
-[![Room Dimensions](/images/campfire-room-dimensions.png)](#)
-
-- Segmented table to avoid participants sitting in the blind spots of the cameras
-- Segmented tables also offers ease of access for maintenance and cleaning at the center
-- Custom design table with the courtesy panels are integrated into the shape*
-- Table shape is custom to optimize on footprint and experience
-- Make sure the technical equipment in the center island have sufficient ventilation and cooling
-
-[![Furniture TopView](/images/campfire-furniture-topview.png)](#)
-
-- Note the privacy panels in the front of each table. Whereas the Quadcamera is mounted in a format outside it's normal deployment, the camera will have visibility under each table. So it's important to source tables with a privacy panel in the front or at least a table cloth.
-
-[![Furniture SideView](/images/campfire-furniture-sideview.png)](#)
-
-- Cisco table shape reference for ideal user experience
-- Courtesy panels is recommended in the setup integration
-- Final implementation to be done with furniture partner of choice
-
-[![Table Dimensions](/images/campfire-furniture-table-dimensions.png)](#)
 
 ## Support Information [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 - All Macros are considered **Custom Code**. Any and all pieces of Custom Code are **NOT** supported by Cisco. The base Hardware, Software and Device xAPI are covered by the product.
@@ -138,6 +111,32 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 |-------------------|----------------|--------------|----------------------|-------------|
 | Codec Pro         | Codec EQ       | 3            | Table Microphone Pro | 8           |
 
+## Room Dimensions [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+
+- The room should not measure less than 9x9m (30x30’). This will allow for enough space for users to move comfortably around the campfire setup. 
+- The provided measurements for the campfire setup has carefully been considered to provide an optimal in-room and far-end experience.
+- The mounting height of the cameras, their relative position to the screens and distance to the position where the local participants are seated, ensure good eye contact both in-room and for remote attendees. 
+- The fixed distance between the screens and the edge of the table secures a free line of sight from the local participants to the video participants and shared digital content. 
+
+[![Room Dimensions](/images/campfire-room-dimensions.png)](#)
+
+- Segmented table to avoid participants sitting in the blind spots of the cameras
+- Segmented tables also offers ease of access for maintenance and cleaning at the center
+- Custom design table with the courtesy panels are integrated into the shape*
+- Table shape is custom to optimize on footprint and experience
+- Make sure the technical equipment in the center island have sufficient ventilation and cooling
+
+[![Furniture TopView](/images/campfire-furniture-topview.png)](#)
+
+- Note the privacy panels in the front of each table. Whereas the Quadcamera is mounted in a format outside it's normal deployment, the camera will have visibility under each table. So it's important to source tables with a privacy panel in the front or at least a table cloth.
+
+[![Furniture SideView](/images/campfire-furniture-sideview.png)](#)
+
+- Cisco table shape reference for ideal user experience
+- Courtesy panels is recommended in the setup integration
+- Final implementation to be done with furniture partner of choice
+
+[![Table Dimensions](/images/campfire-furniture-table-dimensions.png)](#)
 
 ## Device Connectivity Drawings [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
@@ -167,6 +166,7 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 
 - Video Output Connectors 1 and 2 from the Codec Pro are fed into the Partner sourced HDMI Distribution Amplifier
 - The new Outputs from Each DA are distributed to all 8 displays so that each side of the campfire has a duplicate output feed for both output 1 and 2 of the Codec Pro
+- HDMI Output 3 is unused. You could either add another source output in your space, or integrate an HDMI to USB Capture device and leverage the [Call from Laptop BYOD feature](https://help.webex.com/en-us/article/ney3qxe/Call-from-laptop-using-your-Cisco-device-as-a-web-camera#Cisco_Reference.dita_d3c1dbe8-4263-4d55-b19f-6a49478be4c5)
 
 [![Video Output Connections](/images/campfire_connections_videoOut.png)](#)
 
@@ -175,6 +175,10 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 - HDMI Input 1 on the Codec Pro connects to the Primary Codec's own Quadcamera
 - HDMI Inputs 2-4 on the Codec Pro take in the HDMI Output signal of the Codec EQ's HDMI Output 1
   - Each Node Quadcamera's Video Output signal is feed into their respective Node Codec EQ HDMI Input 1
+- HDMI Input 5 is reserved for Laptop Connections
+  - It may be worthwhile to integrate a 4x1 HDMI switcher, in order to place a Laptop Connection on all 4 tables
+  - Keep in mind, these devices also support wireless sharing via Webex Proximity Services, Airplay and Miracast too, so it may not be necessary
+- HD-SDI Input 6 is unused, consider integrating a PTZ Camera in you design if needed, just know the Macros would need some edits to allow for that
 
 [![Video Input Connections](/images/campfire_connections_videoIn.png)](#)
 
