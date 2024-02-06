@@ -22,7 +22,7 @@ The challenge that needed solving was to enable speaker tracking in all side of 
 - [Support Information](#support-information-)
 - [User Guide](#user-guide-)
 - [Device Requirements](#device-requirements-)
-- [Room Dimensions](#campfire-best-practices-)
+- [Room Dimensions](#room-dimensions-)
 - [Device Connectivity Drawings](#device-connectivity-drawings-)
 - [Macro Installation](#macro-installation-)
 - [Configuration](#configuration-)
