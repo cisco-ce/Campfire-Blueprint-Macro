@@ -29,6 +29,7 @@ The challenge that needed solving was to enable speaker tracking in all side of 
   - [Settings](#settings-)
   - [CodecInfo](#codecinfo-)
   - [AudioMap](#audiomap-)
+- [Video Tutorials](#video-tutorials-)
 - [FAQ](#faq-)
 
 > Press on the Menu Icon to come back to the Table of Contents [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
@@ -883,6 +884,14 @@ const AudioMap = {
   - NOTE: Assets may change from project to project
 
 - - -
+
+## Video Tutorials [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
+
+```
+Coming Soon
+
+Stay Tuned
+```
 
 ## FAQ [<img src="/images/view-list-circle_100_w.png" alt="table of contents" width="25"/>](#table-of-contents)
 
