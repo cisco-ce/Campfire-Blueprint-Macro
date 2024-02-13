@@ -323,7 +323,7 @@ const Settings = {
           }
         },
         Mode: {
-          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Conversation', 'Spotlight', 'Quad'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Spotlight: Keeps 1 target camera composed, ignores default overview, composes any additional high zones; Quad: composes all 4 quadcameras
+          Default: 'Speaker',               // DefaultValue: 'Speaker' || AcceptedValues: <'Speaker', 'Everyone', 'Conversation'> || Description: Set the default Camera Behavior. Speaker: Composes last active camera, Conversation: Composes all Active Audio Zones, Everyone: composes all 4 quadcameras using frames
           Speaker: {
             TransitionTimeout: {
               OnJoin: 2500                  // DefaultValue: 2500 || AcceptedValues: Integer in Milliseconds || Description: Define define how long to wait before allowing a new Camera to come into Speaker
@@ -700,8 +700,7 @@ const AudioMap = {
         ]
       },
       Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
-        CustomAsset_1: 'Define My First Asset', // NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
-        CameraId: 1                             // A more real world example of an Asset
+        CameraConnectorId: 1                    // 
       }
     },
     /*
@@ -726,8 +725,7 @@ const AudioMap = {
         ]
       },
       Assets: {                                 // Description: Define any object associated to this Audio Zone. Asset Information will be provided when an Event Fires
-        CustomAsset_2: 'Define My Second Asset',// NOTE: Any Objects nested within Assets are defined by You and have no based key or value pairing. This us an example of a custom asset
-        PresetId: 30                            // A more real world example of an Asset
+        CameraConnectorId: 1                    // 
       }
     }
   ]
