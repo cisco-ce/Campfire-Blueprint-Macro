@@ -639,7 +639,7 @@ Handle.Event = {
               await updateCameraMode(action.Value, 'Widget Action')
             } else {
               xapi.Command.UserInterface.Message.Prompt.Display({
-                Title: `You're Microphones are Muted`,
+                Title: `Your Microphones are Muted`,
                 Text: `Campfire Modes won't take effect until you Unmute your Microphones.`,
                 Duration: 8,
                 FeedbackId: `campfire~unmute~microphones~prompt`,
