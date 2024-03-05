@@ -916,3 +916,27 @@ Stay Tuned
 - You can join a Community Supported Space on Webex
   - https://eurl.io/#nJWdM3w_T
   - NOTE: This is a community supported space. There is no guarantee of assistance in this space, it's a space filled with community members who may or may not answer questions or provide feedback; all is best effort. Should you need hands on assistance, please engage either your Cisco Sales Engineer and/or Cisco Technical Solutions Engineer or an AV Vendor Partner.
+
+### How do I register the Node Codec's?
+#### Cloud/Webex Edge (Preferred)
+- Register all Nodes as a Shared Mode Device in their own Workspace
+- Keep all Nodes and the Primary Codec workspaces on the same Software Channel
+  - This keeps feature parity across all systems
+- Do not assign telephony or a calendar resource account to the Node codecs
+
+- **NOTE**: DO NOT register the Node Codecs to the same workspace as the Primary Codec
+  - This will cause call sync and performance issues, which will break the campfire experience.
+
+> It's recommended to tag all 4 devices so it's easier to find in Webex Control Hub
+
+#### On Premise
+- Register all Devices in CUCM/TMS as an independent device
+- Keep all Nodes and the Primary codecs on the same RoomOS software version
+- Do not assign telephony or a calendar resource account to the Node codecs
+
+
+#### Unregistered (Not Recommended)
+- You can keep the node devices unregistered
+- Some configurations will be needed to prevent errors from showing on the OSD
+- This can save on licensing, but runs the risk of falling out of sync on the software side
+- This would increase the management difficulty of the Node codecs
