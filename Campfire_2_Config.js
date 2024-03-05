@@ -57,7 +57,7 @@ const CodecInfo = {
   },
   PrimaryCodec: {
     Label: 'North',                      // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Primary Codec
-    PrimaryCodec_QuadCamera_Id: '1',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
+    PrimaryCodec_QuadCamera_ConnectorId: '1',          // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured to the quadcamera connected to the Primary Codec
     CodecSerialNumber: '0000000000',          // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Primary Codec
     Authentication: {
       Username: 'admin',                      // DefaultValue: String || AcceptedValue: String || Description: Username for the Primary Codec, used for node communication the primary
@@ -67,7 +67,7 @@ const CodecInfo = {
   NodeCodecs: [
     {
       Label: 'East',                     // DefaultValue: String || AcceptedValue: String || Description: Provide a label for your Node Codec
-      PrimaryCodec_QuadCamera_Id: '2',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
+      PrimaryCodec_QuadCamera_ConnectorId: '2',        // DefaultValue: 1 || AcceptedValue: Integer || Description: Provide the CameraId configured on the Primary Codec this Node Codec's HDMI output is connected to
       CodecSerialNumber: '0000000000',        // DefaultValue: String || AcceptedValue: String || Description: Provide the Serial Number of the Node Codec
       IpAddress: '10.X.X.X',                  // DefaultValue: String || AcceptedValue: String || Description: Provide the IP Address of the Node Codec
       Authentication: {           
@@ -78,14 +78,14 @@ const CodecInfo = {
     // For the remaining Node Codecs, follow the same format as above
     {
       Label: 'South',                            
-      PrimaryCodec_QuadCamera_Id: '3',         
+      PrimaryCodec_QuadCamera_ConnectorId: '3',         
       CodecSerialNumber: '0000000000',         
       IpAddress: '10.X.X.X',                  
       Authentication: { Username: 'admin', Passcode: '' }
     },
     {
       Label: 'West',
-      PrimaryCodec_QuadCamera_Id: '4',
+      PrimaryCodec_QuadCamera_ConnectorId: '4',
       CodecSerialNumber: '0000000000',
       IpAddress: '10.X.X.X',
       Authentication: { Username: 'admin', Passcode: '' }
