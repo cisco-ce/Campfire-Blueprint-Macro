@@ -11,44 +11,8 @@ writing, software distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 *********************************************************
-
- * Author(s):               Robert(Bobby) McGonigle Jr
- *                          Technical Marketing Engineering, Technical Leader
- *                          Cisco Systems
- * 
- * Consulting Engineer(s)   Gerardo Chaves                    William Mills
- *                          Leader, Systems Engineering       Technical Solutions Specialist
- *                          Cisco Systems                     Cisco Systems
- * 
- * Released: November 20, 2023
- * Updated: December 22, 2023
- * 
- * Description:
- *   - Audio Zone Manager (AZM)
- *   - Suite of custom Commands, Statuses and Events that have been
- *     tailored to enable Audio Based Automations
- *   - This Library is intended to be imported into a Project
- * 
- *   - Dependencies
- *     - The Device xAPI
- *     - Audio Configuration Object (Refer to AZM Guide)
- * 
- * Function List
- *    AZM.Command.Zone.Setup(AudioConfiguration)
- *      - Required. Run at on Script Initialization to apply Audio Configuration
- *    AZM.Command.Zone.Monitor.Start()
- *      - Starts VuMonitoring on configured Audio Inputs
- *    AZM.Command.Zone.Monitor.Stop()
- *      - Stops VuMonitoring on configured Audio Inputs
- * 
- *    AZM.Status.Audio.Zone[ZoneId].get()
- *      - Get information on the targeted ZoneId
- *    AZM.Status.Audio.Zone[ZoneId].State.get()
- *      - Get State information on the targeted Zone Id
- * 
- *    AZM.Event.TrackZones.on(event => ...)
- *      - Subscriptions to AZM Zone Events
- *      - Use this to monitor Zone State changes for your solution
+* AZM Documentation
+* https://github.com/ctg-tme/audio-zone-manager-library-macro
 */
 import xapi from 'xapi';
 

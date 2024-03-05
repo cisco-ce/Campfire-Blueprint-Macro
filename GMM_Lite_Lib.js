@@ -11,21 +11,7 @@ writing, software distributed under the License is distributed on an "AS
 IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 *********************************************************
-
- * Author:                  Robert(Bobby) McGonigle Jr
- *                          Technical Marketing Engineer
- *                          Cisco Systems
- *                          bomcgoni@cisco.com
- * 
- * 
- * Consulting Engineer:     Gerardo Chaves
- *                          Technical Solutions Architect
- *                          Cisco Systems
- * 
- * Released: May 16, 2022
- * Updated: January 18, 2024
- * 
- * Version: 1.9.8 LITE
+* Version: 1.9.8 LITE
 */
 
 import xapi from 'xapi';
